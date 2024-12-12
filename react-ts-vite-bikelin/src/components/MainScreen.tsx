@@ -13,6 +13,7 @@ const MainScreen: React.FC = () => {
     <div className="container">
       <div className="header">
         <button onClick={toggleMenu}>☰</button>
+        <h3>Bikelin-Navigator 2.0</h3> {/* Titel neben dem Burger-Button */}
       </div>
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>

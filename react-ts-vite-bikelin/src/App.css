@@ -6,7 +6,6 @@
   background-color: white;
 }
 
-/* Header-Stil */
 .header {
   height: 10%;
   background-color: #f8f9fa;
@@ -14,6 +13,16 @@
   align-items: center;
   padding-left: 20px;
 }
+
+.header button {
+  margin-right: 20px; /* Abstand zwischen Button und Titel */
+}
+
+.header h3 {
+  margin: 0; /* Entfernt den Standardabstand um die Überschrift */
+  color: #333; /* Farbe der Überschrift */
+}
+
 
 /* Hauptbereich für Map und Menü */
 .main-area {
