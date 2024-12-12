@@ -1,0 +1,49 @@
+/* Stil für den gesamten Bildschirm */
+.container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: white;
+}
+
+/* Header-Stil */
+.header {
+  height: 10%;
+  background-color: #f8f9fa;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+/* Hauptbereich für Map und Menü */
+.main-area {
+  height: 90%;
+  position: relative;
+}
+
+/* Burger Menü Stil */
+.burgerMenu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+  background-color: white;
+  z-index: 1000;
+}
+
+.burgerMenu.active {
+  transform: translateX(0);
+}
+
+/* Map Container Stil */
+.mapContainer {
+  height: 100%;
+  transition: margin-left 0.3s ease;
+}
+
+.mapContainer.menuActive {
+  margin-left: 250px;
+}
