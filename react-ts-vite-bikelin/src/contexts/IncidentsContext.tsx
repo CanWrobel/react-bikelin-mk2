@@ -1,6 +1,6 @@
 // src/contexts/IncidentsContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Incident } from '../types/Incident';
+import { Incident } from '../types/Incidents';
 
 interface IncidentsContextType {
   incidents: Incident[];
