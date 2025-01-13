@@ -15,5 +15,6 @@ export interface Incident {
     image?: string;
     incident_id?: number;
     __v?: number;
+    dangerLevel: string;
   }
   

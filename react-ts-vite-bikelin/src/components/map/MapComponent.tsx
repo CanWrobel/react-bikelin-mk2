@@ -42,18 +42,25 @@ const MapComponent: React.FC = () => {
             onClick={() => setSelectedIncident(incident)}
           />
         ))}
-        {selectedIncident && (
-          <InfoWindow
-            position={{ lat: selectedIncident.latitude, lng: selectedIncident.longitude }}
-            onCloseClick={() => setSelectedIncident(null)}
-          >
-            <div>
-              <h2>{selectedIncident.title}</h2>
-              <p>{selectedIncident.description}</p>
-              {/* Du kannst hier weitere Details wie Datum, Zeit oder andere relevante Informationen hinzufügen */}
-            </div>
-          </InfoWindow>
-        )}
+   {selectedIncident && (
+  <InfoWindow
+    position={{ lat: selectedIncident.latitude, lng: selectedIncident.longitude }}
+    onCloseClick={() => setSelectedIncident(null)}
+  >
+    <div style={{ color: 'black', fontSize: '16px', maxWidth: '300px' }}>
+      <h2>{selectedIncident.title}</h2>
+      <p>{selectedIncident.description}</p>
+      <p><strong>Datum:</strong> {selectedIncident.date} um {selectedIncident.time}</p>
+      <p><strong>Adresse:</strong> {selectedIncident.street}, {selectedIncident.zip} {selectedIncident.city}</p>
+      <p><strong>Gefahrenstufe:</strong> {selectedIncident.dangerLevel}</p>
+      <p><strong>Kategorie:</strong> {selectedIncident.category} ({selectedIncident.timeCategory})</p>
+      {selectedIncident.username && <p><strong>Eingereicht von:</strong> {selectedIncident.username}</p>}
+      {selectedIncident.image && <p><strong>Bild:</strong> <img src={`http://141.45.146.183:8080/bikelin/api/image/${selectedIncident.image}`} alt="Incident" style={{ width: '100%' }} /></p>}
+      {/* Weitere Felder hinzufügen, die angezeigt werden sollen */}
+    </div>
+  </InfoWindow>
+)}
+
       </GoogleMap>
     </LoadScript>
   );

@@ -1,3 +1,11 @@
+label {
+  color: #333;  /* Dunkelgraue Schriftfarbe für bessere Lesbarkeit */
+  display: block;  /* Jedes Label wird als Block angezeigt, damit die Eingabefelder darunter erscheinen */
+  margin-bottom: 5px;  /* Etwas Abstand unter jedem Label */
+}
+
+
+
 /* Stil für den gesamten Bildschirm */
 .container {
   width: 100vw;

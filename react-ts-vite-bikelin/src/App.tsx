@@ -1,17 +1,19 @@
 import React from 'react';
 import './App.css';
 import MainScreen from './components/MainScreen'; 
-import  { useEffect } from 'react';
+import { useEffect } from 'react';
+import { UserProvider } from './contexts/UserContext';
 
-
-const App: React.FC = () => {
+const App = () => {
   useEffect(() => {
-    document.title = "Bikelin-Navigator 2.0"; // Setzt den Titel der Seite
-  }, []); // [] sorgt dafür, dass der Effekt nur einmal beim Laden der Komponente ausgeführt wird
+    document.title = "Bikelin-Navigator 2.0";
+  }, []);
 
   return (
     <div className="container">
-      <MainScreen /> 
+      <UserProvider>
+        <MainScreen />
+      </UserProvider>
     </div>
   );
 }
