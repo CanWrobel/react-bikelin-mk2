@@ -27,4 +27,5 @@ npm install keycloak-js
 npm install leaflet react-leaflet
 
 npm install @google/markerclustererplus
+npm install react-router-dom
 
