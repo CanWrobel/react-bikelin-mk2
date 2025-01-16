@@ -1,60 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // useLocation hinzugefügt
 import keycloak from '../../services/auth-service';
 import { useUser } from '../../contexts/UserContext';
-import { useNavigate } from 'react-router-dom';
-
-
+import NewRouteForm from '../NewRouteForm';
+import AddIncident from '../AddIncident';
 
 const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
   const { username, token, setUsername, setToken } = useUser();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      const authenticated = await keycloak.init({ onLoad: 'check-sso' });
-      setIsAuthenticated(authenticated);
-      if (authenticated) {
-        setUsername(keycloak.tokenParsed.name);
-        setToken(keycloak.token); // Setzt den Token, sobald der Benutzer authentifiziert ist
-        console.log("Keycloak Token Parsed:", keycloak.tokenParsed, "Full Keycloak Object:", keycloak);
-      } else {
-        setUsername(null);
-        setToken(null); // Löscht den Token, wenn der Benutzer nicht authentifiziert ist
-      }
-    };
-  
-    checkAuthentication();
-  
-    keycloak.onAuthLogout = () => {
-      setIsAuthenticated(false);
-      setUsername(null);
-      setToken(null);
-    };
-  
-    keycloak.onAuthSuccess = () => {
-      setIsAuthenticated(true);
-      setUsername(keycloak.tokenParsed.name);
-      setToken(keycloak.token); // Aktualisiert den Token bei erfolgreicher Authentifizierung
-    };
-  
-    return () => {
-      keycloak.onAuthLogout = undefined;
-      keycloak.onAuthSuccess = undefined;
-    };
-  }, [setUsername, setToken]); // Fügen Sie setToken zu den Abhängigkeiten hinzu
-  
-  
-
-  const handleLoginLogout = () => {
-    if (isAuthenticated) {
-      keycloak.logout();
-    } else {
-      keycloak.login();
-    }
-  };
-
-  const [showForm, setShowForm] = useState(false);
+  const location = useLocation(); // Aktuelle Route prüfen
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -68,6 +24,39 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
     city: '',
   });
   const [image, setImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const authenticated = await keycloak.init({ onLoad: 'check-sso' });
+      setIsAuthenticated(authenticated);
+      if (authenticated) {
+        setUsername(keycloak.tokenParsed.name);
+        setToken(keycloak.token);
+      } else {
+        setUsername(null);
+        setToken(null);
+      }
+    };
+
+    checkAuthentication();
+
+    keycloak.onAuthLogout = () => {
+      setIsAuthenticated(false);
+      setUsername(null);
+      setToken(null);
+    };
+
+    keycloak.onAuthSuccess = () => {
+      setIsAuthenticated(true);
+      setUsername(keycloak.tokenParsed.name);
+      setToken(keycloak.token);
+    };
+
+    return () => {
+      keycloak.onAuthLogout = undefined;
+      keycloak.onAuthSuccess = undefined;
+    };
+  }, [setUsername, setToken]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -114,7 +103,7 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
           city: '',
         });
         setImage(null);
-        setShowForm(false);
+        setActiveMenu(null);
       } else {
         console.error('Failed to upload incident:', await response.text());
       }
@@ -123,169 +112,47 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
     }
   };
 
+  const handleLoginLogout = () => {
+    if (isAuthenticated) {
+      keycloak.logout();
+    } else {
+      keycloak.login();
+    }
+  };
+  const handleNavigateHome = () => {
+    navigate('/');
+    setTimeout(() => window.location.reload(), 0); // Erzwingt ein vollständiges Neuladen der Seite
+  };
   return (
-    <div className={`burger-menu ${showForm ? 'form-active' : ''}`}>
-      <button onClick={() => alert(token)} >Show Token</button>
-      <br />
-      <br />      
-      <button onClick={() => console.log(token)}>Log Token</button>
-      <br />
-      <br />
-
-      <button onClick={toggleMenu}>Schließen</button>
-      <br />
-      {!showForm && (
+    <div className="burger-menu">
+      {activeMenu === null && (
         <>
+          <button onClick={toggleMenu}>Menü Schließen</button>
+          <button onClick={handleNavigateHome}>Home</button>
 
           <button onClick={handleLoginLogout}>
             {isAuthenticated ? 'Log Out' : 'Log In'}
           </button>
         </>
       )}
-{isAuthenticated && (
-  <>
-    <button 
-      className="incident-toggle" 
-      onClick={() => setShowForm(!showForm)}
-    >
-      {showForm ? 'Hide Form' : 'Neuer Incident'}
-    </button>
 
+      {/* Nur Buttons anzeigen, wenn der Nutzer eingeloggt ist und sich auf "/" befindet */}
+      {isAuthenticated && activeMenu === null && location.pathname === '/' && (
+        <>
+          <button onClick={() => setActiveMenu('incident')}>Neuer Incident</button>
+          <button onClick={() => setActiveMenu('route')}>Neue Route</button>
+          <button onClick={() => navigate('/incidents')}>Incidents Verwalten</button>
+        </>
+      )}
 
-    <button 
-  className="manage-incidents" 
-  onClick={() => navigate('/incidents')}
->
-  Incidents Verwalten
-</button>
-<button 
-  className="manage-incidents" 
-  onClick={() => navigate('/')}
->
-  Home
-</button>
-  </>
+{activeMenu === 'incident' && (
+  <div>
+
+  <AddIncident onClose={() => setActiveMenu(null)} />
+</div>
 )}
 
-
-
-      {showForm && (
-        <form onSubmit={handleFormSubmit} className="incident-form">
-          <label>
-            Title:
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Description:
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Danger Level:
-            <select
-              name="dangerLevel"
-              value={formData.dangerLevel}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="unknown">Unknown</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-          <label>
-            Category:
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="good">Good</option>
-              <option value="bad">Bad</option>
-            </select>
-          </label>
-          <label>
-            Date:
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Time:
-            <input
-              type="time"
-              name="time"
-              value={formData.time}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Time Category:
-            <select
-              name="timeCategory"
-              value={formData.timeCategory}
-              onChange={handleInputChange}
-              required
-            >
-              <option value="temporary">Temporary</option>
-              <option value="semipermanent">Semi-Permanent</option>
-              <option value="permanent">Permanent</option>
-            </select>
-          </label>
-          <label>
-            Street:
-            <input
-              type="text"
-              name="street"
-              value={formData.street}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            ZIP:
-            <input
-              type="text"
-              name="zip"
-              value={formData.zip}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            City:
-            <input
-              type="text"
-              name="city"
-              value={formData.city}
-              onChange={handleInputChange}
-              required
-            />
-          </label>
-          <label>
-            Image (optional):
-            <input type="file" onChange={handleImageChange} />
-          </label>
-          <button type="submit">Submit</button>
-        </form>
-      )}
+      {activeMenu === 'route' && <NewRouteForm onClose={() => setActiveMenu(null)} />}
     </div>
   );
 };
