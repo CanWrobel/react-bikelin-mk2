@@ -1,65 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { useUser } from '../contexts/UserContext';
+import axios from 'axios';
 
 interface Incident {
-  id: string;
+  _id: string;
   title: string;
   description: string;
+  dangerLevel: string;
+  category: string;
   date: string;
-  // Füge weitere Felder hinzu, falls nötig
+  time: string;
+  timeCategory: string;
+  street: string;
+  zip: number;
+  city: string;
+  username: string;
+  longitude: number;
+  latitude: number;
+  incident_id: number;
 }
 
-const IncidentsList: React.FC = () => {
-  const { token } = useUser();
+interface IncidentsListProps {
+  token: string;
+}
+
+const IncidentsList: React.FC<IncidentsListProps> = ({ token }) => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchIncidents = async () => {
-      try {
-        const response = await fetch(`http://141.45.146.183:8080/bikelin/api/incidents/${token}`, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setIncidents(data);
-      } catch (err) {
-        setError(err.message || 'An error occurred');
-      } finally {
-        setLoading(false);
+    axios.get(`http://141.45.146.183:8080/bikelin/api/incidents/${token}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
       }
-    };
-
-    if (token) {
-      fetchIncidents();
-    }
+    })
+    .then(response => {
+      setIncidents(response.data);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setError('Fehler beim Laden der Incidents');
+      setLoading(false);
+    });
   }, [token]);
 
-  if (loading) return <p>Loading incidents...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p>Lädt...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div>
-      <h3>Incidents</h3>
-      {incidents.length > 0 ? (
-        <ul>
-          {incidents.map((incident) => (
-            <li key={incident.id}>
-              <strong>{incident.title}</strong>: {incident.description} ({incident.date})
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No incidents found.</p>
-      )}
+      <h1>Incident Liste</h1>
+      {incidents.map(incident => (
+        <div key={incident._id}>
+          <h2>{incident.title}</h2>
+          <p>{incident.description}</p>
+        </div>
+      ))}
     </div>
   );
 };

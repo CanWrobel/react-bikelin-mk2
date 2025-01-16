@@ -1,4 +1,6 @@
-
+p {
+  color: #333
+}
 
 .burgerMenu button {
   margin-top: 2%; /* Abstand oberhalb jedes Buttons */

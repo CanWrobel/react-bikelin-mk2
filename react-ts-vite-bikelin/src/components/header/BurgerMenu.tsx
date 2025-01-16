@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import keycloak from '../../services/auth-service';
 import { useUser } from '../../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
-  const { username, setUsername } = useUser();
+  const { username, token, setUsername, setToken } = useUser();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -12,28 +16,35 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
       setIsAuthenticated(authenticated);
       if (authenticated) {
         setUsername(keycloak.tokenParsed.name);
+        setToken(keycloak.token); // Setzt den Token, sobald der Benutzer authentifiziert ist
         console.log("Keycloak Token Parsed:", keycloak.tokenParsed, "Full Keycloak Object:", keycloak);
       } else {
         setUsername(null);
+        setToken(null); // Löscht den Token, wenn der Benutzer nicht authentifiziert ist
       }
     };
-
+  
     checkAuthentication();
-
+  
     keycloak.onAuthLogout = () => {
       setIsAuthenticated(false);
       setUsername(null);
+      setToken(null);
     };
+  
     keycloak.onAuthSuccess = () => {
       setIsAuthenticated(true);
       setUsername(keycloak.tokenParsed.name);
+      setToken(keycloak.token); // Aktualisiert den Token bei erfolgreicher Authentifizierung
     };
-
+  
     return () => {
       keycloak.onAuthLogout = undefined;
       keycloak.onAuthSuccess = undefined;
     };
-  }, [setUsername]);
+  }, [setUsername, setToken]); // Fügen Sie setToken zu den Abhängigkeiten hinzu
+  
+  
 
   const handleLoginLogout = () => {
     if (isAuthenticated) {
@@ -114,6 +125,13 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
 
   return (
     <div className={`burger-menu ${showForm ? 'form-active' : ''}`}>
+      <button onClick={() => alert(token)} >Show Token</button>
+      <br />
+      <br />      
+      <button onClick={() => console.log(token)}>Log Token</button>
+      <br />
+      <br />
+
       <button onClick={toggleMenu}>Schließen</button>
       <br />
       {!showForm && (
@@ -138,6 +156,19 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
     >
       Incidents Verwalten
     </button>
+
+    <button 
+  className="manage-incidents" 
+  onClick={() => navigate('/incidents')}
+>
+  Incidents Verwalten
+</button>
+<button 
+  className="manage-incidents" 
+  onClick={() => navigate('/')}
+>
+  Home
+</button>
   </>
 )}
 
