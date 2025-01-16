@@ -28,7 +28,7 @@ const MainScreen: React.FC = () => {
           <>
 
             <div className={`mapContainer ${menuActive ? 'menuActive' : ''}`}>
-              <MapComponent />
+              <MapComponent key={location.key} />
             </div>
           </>
         )}

@@ -150,12 +150,7 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
     >
       {showForm ? 'Hide Form' : 'Neuer Incident'}
     </button>
-    <button 
-      className="manage-incidents" 
-      onClick={() => console.log('Navigate to Incidents Management')}
-    >
-      Incidents Verwalten
-    </button>
+
 
     <button 
   className="manage-incidents" 

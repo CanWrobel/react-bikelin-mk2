@@ -14,9 +14,6 @@ interface Incident {
   zip: number;
   city: string;
   username: string;
-  longitude: number;
-  latitude: number;
-  incident_id: number;
 }
 
 interface IncidentsListProps {
@@ -46,18 +43,71 @@ const IncidentsList: React.FC<IncidentsListProps> = ({ token }) => {
     });
   }, [token]);
 
+  const handleDelete = (id) => {
+    axios.delete(`http://141.45.146.183:8080/bikelin/api/incident/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json, text/plain, */*',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 OPR/115.0.0.0',
+        'Referer': 'http://141.45.146.183/'
+      }
+    })
+    .then(() => {
+      setIncidents(incidents.filter(incident => incident._id !== id));
+      console.log('Incident erfolgreich gelöscht');
+    })
+    .catch(err => {
+      console.error('Fehler beim Löschen des Incidents:', err);
+      alert('Fehler beim Löschen des Incidents. Überprüfen Sie die Konsole für mehr Informationen.');
+    });
+  };
+  
+  
+
   if (loading) return <p>Lädt...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div>
       <h1>Incident Liste</h1>
-      {incidents.map(incident => (
-        <div key={incident._id}>
-          <h2>{incident.title}</h2>
-          <p>{incident.description}</p>
-        </div>
-      ))}
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Incident</th>
+            <th>Beschreibung</th>
+            <th>Gefahrenstufe</th>
+            <th>Kategorie</th>
+            <th>Adresse</th>
+            <th>Auftrittsdatum</th>
+            <th>Zeitdauer</th>
+            <th>Hinzugefügt von</th>
+            <th>Aktionen</th>
+          </tr>
+        </thead>
+        <tbody>
+          {incidents.map(incident => (
+            <tr key={incident._id}>
+              <td>{incident.title}</td>
+              <td>{incident.description}</td>
+              <td>{incident.dangerLevel}</td>
+              <td>{incident.category}</td>
+              <td>{`${incident.street}, ${incident.zip} ${incident.city}`}</td>
+              <td>{`${incident.date} ${incident.time}`}</td>
+              <td>{incident.timeCategory}</td>
+              <td>{incident.username}</td>
+              <td>
+              <button 
+  className="btn btn-danger" 
+  onClick={() => handleDelete(incident._id)}
+>
+  ✖ Löschen
+</button>
+
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
