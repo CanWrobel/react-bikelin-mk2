@@ -1,6 +1,5 @@
-// MapPicker.tsx
-import React from 'react';
-import { GoogleMap, LoadScript } from '@react-google-maps/api';
+import React, { useState } from 'react';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const containerStyle = {
   width: '100%',
@@ -15,14 +14,26 @@ const center = {
 interface MapPickerProps {
   onSelect: (location: { lat: number, lng: number }) => void;
   onCancel: () => void;
+  pickingType: 'start' | 'end';
 }
 
-const MapPicker: React.FC<MapPickerProps> = ({ onSelect, onCancel }) => {
-  const handleMapClick = (event) => {
-    onSelect({
+const MapPicker: React.FC<MapPickerProps> = ({ onSelect, onCancel, pickingType }) => {
+  const [startMarker, setStartMarker] = useState<{lat: number, lng: number} | null>(null);
+  const [endMarker, setEndMarker] = useState<{lat: number, lng: number} | null>(null);
+
+  const handleMapClick = (event: google.maps.MouseEvent) => {
+    const location = {
       lat: event.latLng.lat(),
       lng: event.latLng.lng()
-    });
+    };
+
+    if (pickingType === 'start') {
+      setStartMarker(location);
+    } else {
+      setEndMarker(location);
+    }
+    
+    onSelect(location);
   };
 
   return (
@@ -33,7 +44,20 @@ const MapPicker: React.FC<MapPickerProps> = ({ onSelect, onCancel }) => {
           center={center}
           zoom={10}
           onClick={handleMapClick}
-        />
+        >
+          {startMarker && (
+            <Marker
+              position={startMarker}
+              label="S"
+            />
+          )}
+          {endMarker && (
+            <Marker
+              position={endMarker}
+              label="E"
+            />
+          )}
+        </GoogleMap>
       </LoadScript>
       <button onClick={onCancel}>Cancel</button>
     </div>

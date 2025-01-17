@@ -5,7 +5,12 @@ import { useUser } from '../../contexts/UserContext';
 import NewRouteForm from '../NewRouteForm';
 import AddIncident from '../AddIncident';
 
-const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
+interface BurgerMenuProps {
+  toggleMenu: () => void;
+  onPickLocation: (type: 'start' | 'end') => void;
+}
+
+const BurgerMenu: React.FC<{ toggleMenu: () => void, onPickLocation?: () => void }> = ({ toggleMenu, onPickLocation }) => {
   const { username, token, setUsername, setToken } = useUser();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -152,7 +157,11 @@ const BurgerMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
 </div>
 )}
 
-      {activeMenu === 'route' && <NewRouteForm onClose={() => setActiveMenu(null)} />}
+      {activeMenu === 'route' && 
+        <NewRouteForm 
+          onClose={() => setActiveMenu(null)} 
+          onPickLocation={onPickLocation} 
+        />      }
     </div>
   );
 };

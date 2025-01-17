@@ -1,87 +1,50 @@
 import React, { useState } from 'react';
-import MapComponent from './map/MapComponent';
 
-const NewRouteForm = ({ onClose }) => {
+
+// NewRouteForm props
+interface NewRouteFormProps {
+  onClose: () => void;
+  onPickLocation: (type: 'start' | 'end') => void;
+}
+
+const NewRouteForm: React.FC<{ onClose: () => void, onPickLocation: () => void }> = ({ onClose, onPickLocation }) => {
   const [routeData, setRouteData] = useState({
     startAddress: '',
     startHouseNumber: '',
     startPostalCode: '',
-    startCoords: '',
+    startPoint: '',
     endAddress: '',
     endHouseNumber: '',
     endPostalCode: '',
-    endCoords: '',
+    endPoint: '',
     description: ''
   });
-  
-  const [pickingMode, setPickingMode] = useState('');
 
-  const handleLocationSelect = (location) => {
-    const coordString = `${location.lat}, ${location.lng}`;
-    setRouteData(prev => ({
-      ...prev,
-      [`${pickingMode}Coords`]: coordString
-    }));
-    setPickingMode('');
-  };
-
-  const handlePickOnMap = (type) => {
-    setPickingMode(type);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setRouteData({ ...routeData, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="w-full">
-      {pickingMode ? (
-        <div className="h-96">
-          <MapComponent 
-            isPickerMode={true} 
-            onLocationSelect={handleLocationSelect} 
-          />
-          <button 
-            className="mt-2 p-2 bg-red-500 text-white" 
-            onClick={() => setPickingMode('')}
-          >
-            Cancel Selection
-          </button>
-        </div>
-      ) : (
-        <form className="space-y-4">
-          <div>
-            <h3 className="font-bold">Start Point</h3>
-            <input 
-              type="button" 
-              value="Select on Map" 
-              onClick={() => handlePickOnMap('start')}
-              className="mt-2 p-2 bg-blue-500 text-white"
-            />
-            <input 
-              type="text" 
-              value={routeData.startCoords} 
-              readOnly 
-              className="mt-2 p-2 border"
-              placeholder="Coordinates"
-            />
-          </div>
+    <form>
+      <h3>Start Point Details</h3>
+      <input type="text" name="startAddress" placeholder="Address" value={routeData.startAddress} onChange={handleChange} />
+      <input type="text" name="startHouseNumber" placeholder="House Number" value={routeData.startHouseNumber} onChange={handleChange} />
+      <input type="text" name="startPostalCode" placeholder="Postal Code" value={routeData.startPostalCode} onChange={handleChange} />
+      <input type="button" value="Select on Map" onClick={() => onPickLocation('start')} />
+      <input type="text" name="startPoint" placeholder="Coordinates" value={routeData.startPoint} readOnly />
 
-          <div>
-            <h3 className="font-bold">End Point</h3>
-            <input 
-              type="button" 
-              value="Select on Map" 
-              onClick={() => handlePickOnMap('end')}
-              className="mt-2 p-2 bg-blue-500 text-white"
-            />
-            <input 
-              type="text" 
-              value={routeData.endCoords} 
-              readOnly 
-              className="mt-2 p-2 border"
-              placeholder="Coordinates"
-            />
-          </div>
-        </form>
-      )}
-    </div>
+      <h3>End Point Details</h3>
+      <input type="text" name="endAddress" placeholder="Address" value={routeData.endAddress} onChange={handleChange} />
+      <input type="text" name="endHouseNumber" placeholder="House Number" value={routeData.endHouseNumber} onChange={handleChange} />
+      <input type="text" name="endPostalCode" placeholder="Postal Code" value={routeData.endPostalCode} onChange={handleChange} />
+      <input type="button" value="Select on Map" onClick={() => onPickLocation('end')} />
+      <input type="text" name="endPoint" placeholder="Coordinates" value={routeData.endPoint} readOnly />
+
+      <h3>Route Description</h3>
+      <textarea name="description" value={routeData.description} onChange={handleChange} />
+      <button type="submit">Calculate Route</button>
+      <button type="button" onClick={onClose}>Cancel</button>
+    </form>
   );
 };
 
