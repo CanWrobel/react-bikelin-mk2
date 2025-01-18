@@ -1,3 +1,16 @@
+
+
+input[type="text"],
+textarea {
+  width: 100%; /* Setzt die Breite der Elemente auf 100% ihrer Containerbreite */
+  box-sizing: border-box; /* Stellt sicher, dass Padding und Border in die Breite inkludiert sind */
+}
+
+.pac-container {
+  width: 90% !important; /* oder eine spezifische Breite nach Wahl, z.B. 500px */
+}
+
+
 p {
   color: #333
 }
