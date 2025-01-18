@@ -12,21 +12,41 @@ const MainScreen: React.FC = () => {
   const { username, token } = useUser();
   const location = useLocation();
 
+  // States für die Koordinaten-Verwaltung
+  const [pickingType, setPickingType] = useState<'start' | 'end'>('start');
+  const [selectedCoordinates, setSelectedCoordinates] = useState<string>('');
+
   const toggleMenu = () => {
     setMenuActive(!menuActive);
   };
 
   const handleLocationSelect = (location: { lat: number, lng: number }) => {
-    alert(`Selected: ${location.lat}, ${location.lng}`);
+    // Nur die Position loggen/speichern, aber Picker nicht schließen
+    console.log(`Selected: ${location.lat}, ${location.lng}`);
   };
 
   const handlePickerCancel = () => {
     setIsPickerMode(false);
+    setSelectedCoordinates('');
   };
-  const [pickingType, setPickingType] = useState<'start' | 'end'>('start');
-  
+
   const handleRouteCalculate = () => {
     setIsPickerMode(false);
+    setSelectedCoordinates('');
+  };
+
+  // Handler für die Koordinaten von der RouteForm
+  const handlePickLocation = (type: 'start' | 'end', coordinates: string) => {
+    setIsPickerMode(true);
+    setPickingType(type);
+    setSelectedCoordinates(coordinates);
+  };
+
+  const handleFormSubmit = () => {
+    // Wird aufgerufen, wenn das Formular abgeschickt wird
+    setIsPickerMode(false);
+    setSelectedCoordinates('');
+    // Hier können weitere Aktionen nach dem Formular-Submit ausgeführt werden
   };
 
   return (
@@ -37,22 +57,20 @@ const MainScreen: React.FC = () => {
       </div>
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>
-        <BurgerMenu 
-    toggleMenu={toggleMenu} 
-    onPickLocation={(type) => {
-      setIsPickerMode(true);
-      setPickingType(type);
-    }}
-  />
+          <BurgerMenu 
+            toggleMenu={toggleMenu}
+            onPickLocation={handlePickLocation}
+          />
         </div>
         {location.pathname === '/' && (
           <div className={`mapContainer ${menuActive ? 'menuActive' : ''}`}>
             {isPickerMode ? (
               <MapPicker
-              onSelect={handleLocationSelect}
-              onCancel={handlePickerCancel}
-              pickingType={pickingType}
-            />
+                onSelect={handleLocationSelect}
+                onCancel={handlePickerCancel}
+                pickingType={pickingType}
+                coordinates={selectedCoordinates}
+              />
             ) : (
               <MapComponent key={location.key} />
             )}

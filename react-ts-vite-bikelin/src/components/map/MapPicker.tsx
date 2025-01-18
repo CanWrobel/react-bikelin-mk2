@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const containerStyle = {
@@ -15,11 +15,33 @@ interface MapPickerProps {
   onSelect: (location: { lat: number, lng: number }) => void;
   onCancel: () => void;
   pickingType: 'start' | 'end';
+  coordinates?: string;  // Format: "lat,lng"
 }
 
-const MapPicker: React.FC<MapPickerProps> = ({ onSelect, onCancel, pickingType }) => {
+const MapPicker: React.FC<MapPickerProps> = ({ 
+  onSelect, 
+  onCancel, 
+  pickingType,
+  coordinates 
+}) => {
   const [startMarker, setStartMarker] = useState<{lat: number, lng: number} | null>(null);
   const [endMarker, setEndMarker] = useState<{lat: number, lng: number} | null>(null);
+
+  // Wenn neue Koordinaten kommen, setze den entsprechenden Marker
+  useEffect(() => {
+    if (coordinates) {
+      const [lat, lng] = coordinates.split(',').map(Number);
+      const location = { lat, lng };
+      
+      if (pickingType === 'start') {
+        setStartMarker(location);
+      } else {
+        setEndMarker(location);
+      }
+      // Informiere Parent über die neue Position, aber ohne auto-close
+      onSelect(location);
+    }
+  }, [coordinates, pickingType]);
 
   const handleMapClick = (event: google.maps.MouseEvent) => {
     const location = {
@@ -33,6 +55,7 @@ const MapPicker: React.FC<MapPickerProps> = ({ onSelect, onCancel, pickingType }
       setEndMarker(location);
     }
     
+    // Informiere Parent über die neue Position, aber ohne auto-close
     onSelect(location);
   };
 
