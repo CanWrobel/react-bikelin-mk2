@@ -8,9 +8,18 @@ import AddIncident from '../AddIncident';
 interface BurgerMenuProps {
   toggleMenu: () => void;
   onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
+  selectedMapLocation: {
+    type: 'start' | 'end';
+    lat: number;
+    lng: number;
+  } | null;
 }
 
-const BurgerMenu: React.FC<BurgerMenuProps> = ({ toggleMenu, onPickLocation }) => {
+const BurgerMenu: React.FC<BurgerMenuProps> = ({ 
+  toggleMenu, 
+  onPickLocation,
+  selectedMapLocation 
+}) => {
   const { username, token, setUsername, setToken } = useUser();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -99,6 +108,7 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({ toggleMenu, onPickLocation }) =
         <NewRouteForm 
           onClose={() => setActiveMenu(null)} 
           onPickLocation={handleRoutePickLocation}
+          selectedLocation={selectedMapLocation}  // Neue Prop
         />
       }
     </div>

@@ -15,24 +15,35 @@ const MainScreen: React.FC = () => {
   // States für die Koordinaten-Verwaltung
   const [pickingType, setPickingType] = useState<'start' | 'end'>('start');
   const [selectedCoordinates, setSelectedCoordinates] = useState<string>('');
+  const [selectedMapLocation, setSelectedMapLocation] = useState<{
+    type: 'start' | 'end';
+    lat: number;
+    lng: number;
+  } | null>(null);
 
   const toggleMenu = () => {
     setMenuActive(!menuActive);
   };
 
   const handleLocationSelect = (location: { lat: number, lng: number }) => {
-    // Nur die Position loggen/speichern, aber Picker nicht schließen
+    // Speichere die ausgewählte Position mit dem aktuellen Typ
     console.log(`Selected: ${location.lat}, ${location.lng}`);
+    setSelectedMapLocation({
+      type: pickingType,
+      ...location
+    });
   };
 
   const handlePickerCancel = () => {
     setIsPickerMode(false);
     setSelectedCoordinates('');
+    setSelectedMapLocation(null);
   };
 
   const handleRouteCalculate = () => {
     setIsPickerMode(false);
     setSelectedCoordinates('');
+    setSelectedMapLocation(null);
   };
 
   // Handler für die Koordinaten von der RouteForm
@@ -40,12 +51,14 @@ const MainScreen: React.FC = () => {
     setIsPickerMode(true);
     setPickingType(type);
     setSelectedCoordinates(coordinates);
+    setSelectedMapLocation(null);
   };
 
   const handleFormSubmit = () => {
     // Wird aufgerufen, wenn das Formular abgeschickt wird
     setIsPickerMode(false);
     setSelectedCoordinates('');
+    setSelectedMapLocation(null);
     // Hier können weitere Aktionen nach dem Formular-Submit ausgeführt werden
   };
 
@@ -60,6 +73,7 @@ const MainScreen: React.FC = () => {
           <BurgerMenu 
             toggleMenu={toggleMenu}
             onPickLocation={handlePickLocation}
+            selectedMapLocation={selectedMapLocation}
           />
         </div>
         {location.pathname === '/' && (

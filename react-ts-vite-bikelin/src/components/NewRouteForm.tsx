@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { useLoadScript, StandaloneSearchBox } from '@react-google-maps/api';
+import axios from 'axios';
+import { useUser } from '../contexts/UserContext';
+import { toggleSaveRoute } from './SaveRouteLogic'
+import { RouteData } from '../types/RouteData';
 
 interface NewRouteFormProps {
   onClose: () => void;
   onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
+  selectedLocation?: { type: 'start' | 'end', lat: number, lng: number };  // Neue Prop für die vom MapPicker ausgewählte Position
 }
 
-const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation }) => {
+const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, selectedLocation }) => {
+  const { username, token } = useUser();
+
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: "AIzaSyCrKbXEddxNxGUIo9ihGgQi2Xj_pDribYs",
     libraries: ['places']
@@ -21,11 +29,56 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation }) 
     endHouseNumber: '',
     endPostalCode: '',
     endPoint: '',
-    description: ''
+    description: '',
+    saveRoute: true,
+    departureTime: new Date().toISOString().slice(0, 16), // Format: "YYYY-MM-DDThh:mm"
+
   });
 
   const [startSearchBox, setStartSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   const [endSearchBox, setEndSearchBox] = useState<google.maps.places.SearchBox | null>(null);
+
+  // Wenn eine neue Position vom MapPicker kommt, hole die Adresse
+  React.useEffect(() => {
+    if (selectedLocation) {
+      const { type, lat, lng } = selectedLocation;
+      
+      // Koordinaten im Format speichern
+      const coordinates = `${lat},${lng}`;
+      setRouteData(prev => ({
+        ...prev,
+        [`${type}Point`]: coordinates
+      }));
+
+      // Adresse von der API holen
+      fetchAddress(lng, lat, type);
+    }
+  }, [selectedLocation]);
+
+  const fetchAddress = async (lon: number, lat: number, type: 'start' | 'end') => {
+    try {
+      const response = await axios.get(
+        `http://141.45.146.183:8080/routing/getLocationName/${lon}/${lat}`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      console.log('Address response:', response.data);
+      
+      // Formular mit den erhaltenen Daten aktualisieren
+      setRouteData(prev => ({
+        ...prev,
+        [`${type}Address`]: response.data
+      }));
+      
+    } catch (error) {
+      console.error('Error fetching address:', error);
+    }
+  };
 
   const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefined, type: 'start' | 'end') => {
     if (places && places.length > 0) {
@@ -53,6 +106,42 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation }) 
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+   
+    if (routeData.saveRoute) {
+      try {
+        await axios.post(
+          'http://141.45.146.183:8080/route-manager/calculate-routes',
+          {
+            startString: routeData.startAddress,
+            endString: routeData.endAddress,
+            routeDescription: routeData.description,
+            start: {
+              lon: parseFloat(routeData.startPoint.split(',')[1]),
+              lat: parseFloat(routeData.startPoint.split(',')[0])
+            },
+            end: {
+              lon: parseFloat(routeData.endPoint.split(',')[1]), 
+              lat: parseFloat(routeData.endPoint.split(',')[0])
+            },
+            departureTime: routeData.departureTime,
+            saveRoute: routeData.saveRoute
+          },
+          {
+            headers: {
+              'Accept': 'application/json, text/plain, */*',
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        onClose();
+      } catch (error) {
+        console.error('Error saving route:', error);
+      }
+    }
+   };
   const onStartLoad = (ref: google.maps.places.SearchBox) => setStartSearchBox(ref);
   const onEndLoad = (ref: google.maps.places.SearchBox) => setEndSearchBox(ref);
 
@@ -75,8 +164,8 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation }) 
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
-    <form>
-      <h3>Start Point Details</h3>
+<form onSubmit={handleSubmit}>
+  <h3>Start Point Details</h3>
       <StandaloneSearchBox
         onLoad={onStartLoad}
         onPlacesChanged={handleStartPlacesChanged}
@@ -152,7 +241,22 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation }) 
         onChange={handleChange}
         wrap="soft"
       />
-      <button type="submit">Calculate Route</button>
+<div>
+ <label htmlFor="departureTime">Departure Time</label>
+ <input
+   id="departureTime"
+   type="datetime-local"
+   name="departureTime"
+   value={routeData.departureTime}
+   onChange={handleChange}
+   style={{ width: '200px', marginTop: '5px' }}
+   data-date-format="DD.MM.YYYY HH:mm"
+ />
+</div>
+      <button type="button" style={{ backgroundColor: routeData.saveRoute ? 'green' : 'gray', color: 'white' }} onClick={() => toggleSaveRoute(routeData, setRouteData)}>
+        {routeData.saveRoute ? 'Route wird gespeichert' : 'Route wird nicht gespeichert'}
+      </button>
+      <button  type="submit">Calculate Route</button>
       <button type="button" onClick={onClose}>Cancel</button>
     </form>
   );
