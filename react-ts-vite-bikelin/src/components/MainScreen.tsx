@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Route, useLocation } from 'react-router-dom';
 import IncidentsList from './IncidentsList';
 import MapComponent from './map/MapComponent';
 import MapPicker from './map/MapPicker';
 import BurgerMenu from './header/BurgerMenu';
 import { useUser } from '../contexts/UserContext';
+import RouteList from './RoutesList';
 
 const MainScreen: React.FC = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -93,6 +94,11 @@ const MainScreen: React.FC = () => {
         {location.pathname === '/incidents' && (
           <div className={`mapContainer ${menuActive ? 'menuActive' : ''}`}>
             <IncidentsList token={token} />
+          </div>
+        )}
+                {location.pathname === '/routes' && (
+          <div className={`mapContainer ${menuActive ? 'menuActive' : ''}`}>
+            <RouteList token={token} />
           </div>
         )}
       </div>

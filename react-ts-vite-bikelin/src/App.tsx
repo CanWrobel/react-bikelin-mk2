@@ -18,6 +18,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<MainScreen />} />
             <Route path="/incidents" element={<MainScreen />} />
+            <Route path="/routes" element={<MainScreen />} />
+
           </Routes>
         </UserProvider>
       </div>
