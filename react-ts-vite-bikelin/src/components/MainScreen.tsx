@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Route, useLocation } from 'react-router-dom';
+import { Route, useLocation, useNavigate } from 'react-router-dom';
 import IncidentsList from './IncidentsList';
 import MapComponent from './map/MapComponent';
 import MapPicker from './map/MapPicker';
 import BurgerMenu from './header/BurgerMenu';
 import { useUser } from '../contexts/UserContext';
 import RouteList from './RoutesList';
+// @ts-ignore
+import WeatherComponent from './weather/WeatherComponent';
+
 
 const MainScreen: React.FC = () => {
   const [menuActive, setMenuActive] = useState(false);
   const [isPickerMode, setIsPickerMode] = useState(false);
   const { username, token } = useUser();
   const location = useLocation();
-
+  const navigate = useNavigate();
   // States für die Koordinaten-Verwaltung
   const [pickingType, setPickingType] = useState<'start' | 'end'>('start');
   const [selectedCoordinates, setSelectedCoordinates] = useState<string>('');
@@ -67,7 +70,9 @@ const MainScreen: React.FC = () => {
     <div className="container">
       <div className="header">
         <button onClick={toggleMenu}>☰</button>
-        <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}` : ''}</h3>
+        <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}      ` + "|" : ''}</h3>
+        <button onClick={() => navigate('/weather')}>Wettervorhersage für Berlin</button>
+
       </div>
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>
@@ -101,6 +106,14 @@ const MainScreen: React.FC = () => {
             <RouteList token={token} />
           </div>
         )}
+        {location.pathname === '/weather' && (
+  <div 
+    className={`mapContainer ${menuActive ? 'menuActive' : ''}`}
+    style={{ overflowY: 'auto' }}
+  >
+    <WeatherComponent />
+  </div>
+)}
       </div>
     </div>
   );

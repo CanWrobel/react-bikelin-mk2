@@ -19,6 +19,7 @@ const App = () => {
             <Route path="/" element={<MainScreen />} />
             <Route path="/incidents" element={<MainScreen />} />
             <Route path="/routes" element={<MainScreen />} />
+            <Route path="/weather" element={<MainScreen />} />
 
           </Routes>
         </UserProvider>

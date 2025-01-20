@@ -8,3 +8,7 @@ send to googlemaps
 
 pls ein neuer button zu "save route"
 
+klick auf route soll die route gleich laden
+
+wettervorhersage für die gespeicherten locations
+

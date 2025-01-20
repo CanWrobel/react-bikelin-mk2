@@ -1,8 +1,25 @@
-import React from "react";
-import StaticText from "./StaticText";
-import "./WeatherComponent.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import './WeatherComponent.css';
 
-const WeatherComponent = ({ data }) => {
+const WeatherComponent = () => {
+  const [weatherData, setWeatherData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("https://canwrobel.de/1880/weather")
+      .then((response) => {
+        setWeatherData(response.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setIsLoading(false);
+      });
+  }, []);
+
   // Hilfsfunktionen zur Formatierung von Datum und Uhrzeit
   const formatDate = (timestamp) => {
     const date = new Date(timestamp * 1000);
@@ -15,19 +32,20 @@ const WeatherComponent = ({ data }) => {
   };
 
   // Vorhersagen nach Tagen gruppieren
-  const dailyForecasts = data.list.reduce((acc, forecast) => {
+  const dailyForecasts = weatherData ? weatherData.list.reduce((acc, forecast) => {
     const date = formatDate(forecast.dt);
     if (!acc[date]) {
       acc[date] = [];
     }
     acc[date].push(forecast);
     return acc;
-  }, {});
+  }, {}) : {};
 
   // Funktion, um die aktuellste Vorhersage für heute zu finden
   const getCurrentForecast = () => {
-    const now = Date.now() / 1000; // aktueller Timestamp in Sekunden
-    return data.list.find((forecast) => forecast.dt > now) || data.list[0];
+    if (!weatherData) return null;
+    const now = Date.now() / 1000;
+    return weatherData.list.find((forecast) => forecast.dt > now) || weatherData.list[0];
   };
 
   // Funktion, um die Vorhersage für 16:00 Uhr zu finden
@@ -35,35 +53,33 @@ const WeatherComponent = ({ data }) => {
     return (
       forecasts.find((f) => new Date(f.dt * 1000).getHours() === 16) ||
       forecasts[5]
-    ); // 5. Eintrag als Fallback
+    );
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!weatherData) return <div>No weather data available</div>;
 
   return (
     <div className="weather-container">
-      <StaticText />
-
-      {/* Oberster Container für den aktuellen Tag mit der aktuellsten Vorhersage */}
       {Object.keys(dailyForecasts).map((date, index) => {
         const forecasts = dailyForecasts[date];
 
-        // Wenn keine Vorhersagen für den Tag vorhanden sind, überspringe
         if (!forecasts || forecasts.length === 0) return null;
 
-        // Für den aktuellen Tag die aktuelle Vorhersage, für die anderen Tage die 16:00 Vorhersage
         const isToday = index === 0;
         const currentForecast = isToday
           ? getCurrentForecast()
           : getForecastFor16(forecasts);
 
-        // Falls currentForecast undefined ist, überspringe
         if (!currentForecast) return null;
 
         return (
           <div key={date} className="rw-container css-1qhov81">
             <div className="rw-container-main">
               <div className="rw-container-left">
-                <h2 className="rw-container-header">
-                  Berlin () {isToday ? " Heute" : ""}
+              <h2 className="rw-container-header">
+                  Berlin {isToday ? " Heute" : ` ${new Date(currentForecast.dt * 1000).toLocaleDateString(undefined, { weekday: 'long' })}`}
                 </h2>
                 <div className="rw-today css-w3t7ie">
                   <div className="rw-today-date">
@@ -71,11 +87,11 @@ const WeatherComponent = ({ data }) => {
                   </div>
                   <div className="rw-today-hr"></div>
                   <div className="rw-today-current">
-                    {currentForecast.main.temp.toFixed(0)} C
+                    {currentForecast.main.temp.toFixed(0)} °C
                   </div>
                   <div className="rw-today-range">
                     {currentForecast.main.temp_max.toFixed(0)} /{" "}
-                    {currentForecast.main.temp_min.toFixed(0)} C
+                    {currentForecast.main.temp_min.toFixed(0)} °C
                   </div>
                   <div className="rw-today-desc">
                     {currentForecast.weather[0].description}
@@ -103,7 +119,6 @@ const WeatherComponent = ({ data }) => {
               </div>
             </div>
 
-            {/* Stündliche Vorhersage für den Tag */}
             <div className="rw-forecast-days-panel css-evb4g3">
               {forecasts.slice(0, 8).map((item) => (
                 <div key={item.dt} className="rw-forecast-day">
@@ -122,7 +137,6 @@ const WeatherComponent = ({ data }) => {
                       ? `${item.rain["3h"]} mm/h`
                       : ""}
                   </div>
-
                   <div
                     className="rw-forecast-range"
                     style={{
@@ -134,12 +148,12 @@ const WeatherComponent = ({ data }) => {
                           : "none",
                       fontWeight:
                         item.wind.speed * 3.6 < 15 ? "bold" : "normal",
-                      padding: "5px", // Füge etwas Padding hinzu, damit der Rand sichtbar ist
+                      padding: "5px",
                     }}
                   >
                     {item.main.temp.toFixed(0)} °C{" "}
                     <img
-                      src="/static/Windicon.png"
+                      src="https://canwrobel.de/static/Windicon.png"
                       className="icon"
                       style={{
                         width: "20px",
