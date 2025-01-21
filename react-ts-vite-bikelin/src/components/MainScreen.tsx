@@ -76,8 +76,12 @@ const MainScreen: React.FC = () => {
         <button onClick={toggleMenu}>☰</button>
         <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}      ` + "|" : ''}</h3>
         <button onClick={() => navigate('/weather')}>Wettervorhersage für Berlin</button>
-        <button onClick={() => alert(routeInfo.startTime)}>Gib start time</button>
-
+        <button 
+  onClick={() => alert(JSON.stringify(routeInfo, null, 2))}
+  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+>
+  Gib Route Context
+</button>
       </div>
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>

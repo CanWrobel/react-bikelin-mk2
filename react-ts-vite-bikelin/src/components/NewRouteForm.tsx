@@ -17,8 +17,15 @@ interface NewRouteFormProps {
 const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, selectedLocation,          }) => {
   const { username, token } = useUser();
 
-  const { routeInfo, setStartTime } = useRoute();  // Using setStartTime from the context
-
+  const { 
+    routeInfo, 
+    setStartTime, 
+    setArrivalTime: setDuration, 
+    setStartLocation, 
+    setEndLocation, 
+    setStartAddress, 
+    setEndAddress 
+  } = useRoute();
 
 
 
@@ -122,6 +129,18 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
    
+    setStartTime(routeData.departureTime);
+    setStartLocation({
+      lat: parseFloat(routeData.startPoint.split(',')[0]),
+      lng: parseFloat(routeData.startPoint.split(',')[1])
+    });
+    setEndLocation({
+      lat: parseFloat(routeData.endPoint.split(',')[0]),
+      lng: parseFloat(routeData.endPoint.split(',')[1])
+    });
+    setStartAddress(routeData.startAddress);
+    setEndAddress(routeData.endAddress);
+
     if (routeData.saveRoute) {
       try {
         await axios.post(

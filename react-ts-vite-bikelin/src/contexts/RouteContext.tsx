@@ -8,14 +8,14 @@ const defaultRouteInfo: RouteInfo = {
   startAddress: 'start',
   endAddress: 'end',
   endLocation: null,
-  duration: ''
+  arrivalTime: ''
 };
 
 // Standardwerte für den Context
 const defaultContextValue: RouteContextType = {
   routeInfo: defaultRouteInfo,
   setStartTime: () => {},
-  setDuration: () => {},
+  setArrivalTime: () => {},
   setStartLocation: () => {},
   setEndLocation: () => {},
   setStartAddress: () => {},
@@ -38,7 +38,7 @@ export const RouteProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const setDuration = (duration: string) => {
-    setRouteInfo(prev => ({ ...prev, duration }));
+    setRouteInfo(prev => ({ ...prev, arrivalTime: duration }));
   };
 
   const setStartLocation = (location: { lat: number; lng: number }) => {
@@ -61,7 +61,7 @@ export const RouteProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <RouteContext.Provider value={{
       routeInfo,
       setStartTime,
-      setDuration,
+      setArrivalTime: setDuration,
       setStartLocation,
       setEndLocation,
       setStartAddress,

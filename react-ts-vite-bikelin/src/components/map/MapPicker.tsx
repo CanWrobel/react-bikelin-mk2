@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+import { useRoute } from '../../contexts/RouteContext';
 
 const containerStyle = {
   width: '100%',
@@ -16,23 +17,21 @@ interface MapPickerProps {
   onCancel: () => void;
   pickingType: 'start' | 'end';
   coordinates?: string;
-  onRouteWeather?: (startMarker: { lat: number, lng: number }, 
-                    endMarker: { lat: number, lng: number }, 
-                    duration: string) => void;
 }
 
 const MapPicker: React.FC<MapPickerProps> = ({
   onSelect,
   onCancel,
   pickingType,
-  coordinates,
-  onRouteWeather
+  coordinates
 }) => {
+  const { routeInfo, setArrivalTime } = useRoute();
   const [startMarker, setStartMarker] = useState<{lat: number, lng: number} | null>(null);
   const [endMarker, setEndMarker] = useState<{lat: number, lng: number} | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
+  const [startTime, setStartTimeOnForm] = useState<string>('');
 
   useEffect(() => {
     if (coordinates) {
@@ -68,12 +67,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
     onSelect(location);
   };
 
-  const handleGetRouteWeather = () => {
-    if (startMarker && endMarker && duration && onRouteWeather) {
-      onRouteWeather(startMarker, endMarker, duration);
-    }
-  };
-
   const fetchRoute = (start: {lat: number, lng: number}, end: {lat: number, lng: number}) => {
     if (!start || !end) return;
    
@@ -100,7 +93,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -113,29 +106,49 @@ const MapPicker: React.FC<MapPickerProps> = ({
           {directions && <DirectionsRenderer directions={directions} />}
         </GoogleMap>
       </LoadScript>
+      
+      <div className="space-y-2">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+              Startzeit
+            </label>
+            <input
+              type="time"
+              id="startTime"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              value={startTime}
+              onChange={(e) => setStartTimeOnForm(e.target.value)}
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="arrivalTime" className="block text-sm font-medium text-gray-700">
+              Ankunftszeit
+            </label>
+            <input
+              type="time"
+              id="arrivalTime"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              value={routeInfo.arrivalTime}
+              onChange={(e) => setArrivalTime(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
       {distance && duration && (
-        <div>
+        <div className="space-y-2">
           <p>Distance: {distance}</p>
           <p>Duration: {duration}</p>
-          {startMarker && endMarker && (
-            <button
-              onClick={handleGetRouteWeather}
-              style={{
-                padding: '10px 20px',
-                margin: '10px 0',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Get Route Weather Forecast
-            </button>
-          )}
         </div>
       )}
-      <button onClick={onCancel}>Cancel</button>
+      
+      <button 
+        onClick={onCancel}
+        className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+      >
+        Abbrechen
+      </button>
     </div>
   );
 };
