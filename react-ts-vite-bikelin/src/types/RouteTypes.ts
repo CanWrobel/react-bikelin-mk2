@@ -1,3 +1,4 @@
+//routeinfo.ts
 export interface RouteInfo {
     startTime: string;
     startLocation: { lat: number, lng: number } | null;

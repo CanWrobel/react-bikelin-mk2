@@ -9,16 +9,26 @@ import { RouteProvider } from './contexts/RouteContext';
 
 
 const App = () => {
+  console.log('App Component wird initialisiert');
+
   useEffect(() => {
+    console.log('App useEffect wird ausgeführt');
     document.title = "Bikelin-Navigator 2.0";
   }, []);
 
+  console.log('App rendert...');
+  
   return (
     <Router>
+      {console.log('Router wird gerendert')}
       <UserProvider>
-        <RouteProvider> {/* Hinzufügen des RouteProvider um die Komponenten */}
+        {console.log('UserProvider wird gerendert')}
+        <RouteProvider>
+          {console.log('RouteProvider wird gerendert')}
           <div className="container">
+            {console.log('Container div wird gerendert')}
             <Routes>
+              {console.log('Routes werden initialisiert')}
               <Route path="/" element={<MainScreen />} />
               <Route path="/incidents" element={<MainScreen />} />
               <Route path="/routes" element={<MainScreen />} />
