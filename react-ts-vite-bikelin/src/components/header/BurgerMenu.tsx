@@ -112,6 +112,7 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
           onClose={() => setActiveMenu(null)} 
           onPickLocation={handleRoutePickLocation}
           selectedLocation={selectedMapLocation}  // Neue Prop
+          onStartTimeChange={() => {}}  
         />
       }
     </div>

@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLoadScript, StandaloneSearchBox } from '@react-google-maps/api';
 import axios from 'axios';
 import { useUser } from '../contexts/UserContext';
 import { toggleSaveRoute } from './SaveRouteLogic'
 import { RouteData } from '../types/RouteData';
+import { useRoute } from '../contexts/RouteContext';
+
 
 interface NewRouteFormProps {
   onClose: () => void;
   onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
   selectedLocation?: { type: 'start' | 'end', lat: number, lng: number };  // Neue Prop für die vom MapPicker ausgewählte Position
+
 }
 
-const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, selectedLocation }) => {
+const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, selectedLocation,          }) => {
   const { username, token } = useUser();
+
+  const { routeInfo, setStartTime } = useRoute();  // Using setStartTime from the context
+
+
+
 
 
   const { isLoaded } = useLoadScript({
@@ -37,7 +45,12 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
 
   const [startSearchBox, setStartSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   const [endSearchBox, setEndSearchBox] = useState<google.maps.places.SearchBox | null>(null);
-
+  useEffect(() => {
+    // Set the start time to now only when the component mounts
+    const now = new Date().toISOString().slice(0, 16); // Format: "YYYY-MM-DDThh:mm"
+    setStartTime(now);
+    setRouteData(prev => ({ ...prev, departureTime: now }));
+  }, []);
   // Wenn eine neue Position vom MapPicker kommt, hole die Adresse
   React.useEffect(() => {
     if (selectedLocation) {
@@ -159,6 +172,11 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRouteData({ ...routeData, [e.target.name]: e.target.value });
+        // Wenn das geänderte Feld die Startzeit ist, rufe onStartTimeChange auf
+        if (e.target.name === 'departureTime') {
+          setStartTime(e.target.value);
+          // Directly update the context
+        }
   };
 
   if (!isLoaded) return <div>Loading...</div>;

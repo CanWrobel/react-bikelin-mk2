@@ -3,6 +3,7 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google
 import { Incident } from '../../types/Incidents';
 import { useUser } from '../../contexts/UserContext';
 import CustomInfoWindow from './InfoWindow';
+import RouteDetailedWeatherComponent from '../weather/RouteDetailedWeatherComponent';
 
 const containerStyle = {
   width: '100%',

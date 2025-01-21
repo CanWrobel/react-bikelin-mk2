@@ -8,7 +8,7 @@ import { useUser } from '../contexts/UserContext';
 import RouteList from './RoutesList';
 // @ts-ignore
 import WeatherComponent from './weather/WeatherComponent';
-
+import { useRoute } from '../contexts/RouteContext';
 
 const MainScreen: React.FC = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -24,6 +24,10 @@ const MainScreen: React.FC = () => {
     lat: number;
     lng: number;
   } | null>(null);
+
+  const { routeInfo } = useRoute();
+
+
 
   const toggleMenu = () => {
     setMenuActive(!menuActive);
@@ -72,6 +76,7 @@ const MainScreen: React.FC = () => {
         <button onClick={toggleMenu}>☰</button>
         <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}      ` + "|" : ''}</h3>
         <button onClick={() => navigate('/weather')}>Wettervorhersage für Berlin</button>
+        <button onClick={() => alert(routeInfo.startTime)}>Gib start time</button>
 
       </div>
       <div className="main-area">
