@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useRoute } from '../../contexts/RouteContext';
 
-const DetailedWeatherComponentInTheMap = () => {
+const DetailedForecastZiel = () => {
   const [weatherData, setWeatherData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +20,7 @@ const DetailedWeatherComponentInTheMap = () => {
       try {
         setIsLoading(true);
         const response = await axios.get(
-          `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${routeInfo.startLocation?.lat}&lon=${routeInfo.startLocation?.lng}&dt=${routeInfo.startTimeUnix}&appid=${apiKey}&units=metric`
+          `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${routeInfo.endLocation?.lat}&lon=${routeInfo.endLocation?.lng}&dt=${routeInfo.arrivalTimeUnix}&appid=${apiKey}&units=metric`
         );
         
         console.log('Weather Data:', response.data);  // Log the response to see the structure
@@ -50,11 +50,11 @@ const DetailedWeatherComponentInTheMap = () => {
         </div>
 
         <h2 className="rw-container-header">
-                 Start: {routeInfo.startAddress}
+                 Ziel: {routeInfo.endAddress}
                 </h2>
           <div className="rw-today css-w3t7ie">
             <div className="rw-today-date">
-              {routeInfo.startTime}
+              {routeInfo.arrivalTime}
             </div>
             <div className="rw-today-hr"></div>
             <div className="rw-today-current">
@@ -91,4 +91,4 @@ const DetailedWeatherComponentInTheMap = () => {
   );
 };
 
-export default DetailedWeatherComponentInTheMap;
+export default DetailedForecastZiel;

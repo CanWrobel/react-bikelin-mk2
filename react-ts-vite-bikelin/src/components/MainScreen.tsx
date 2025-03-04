@@ -75,7 +75,10 @@ const MainScreen: React.FC = () => {
         <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}      ` + "|" : ''}</h3>
         <button onClick={() => navigate('/weather')}>Wettervorhersage für Berlin</button>
         <button 
-  onClick={() => console.log(JSON.stringify(routeInfo, null, 2))}
+  onClick={() => {
+    console.log(JSON.stringify(routeInfo, null, 2));  // Log in der Konsole
+    alert(JSON.stringify(routeInfo));                  // Alert-Fenster mit JSON
+  }}
   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
 >
   Gib Route Context

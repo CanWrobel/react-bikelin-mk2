@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useRoute } from '../../contexts/RouteContext';
+import DetailedWeatherComponent from '../weather/DetailedWeatherComponent';
+import DetailedWeatherComponentInTheMap from '../weather/DetailedWeatherInTheMap';
+import DetailedForecastZiel from '../weather/DetailedForecastZiel';
 
 // Global lock to prevent concurrent coordinate updates
 declare global {
@@ -343,8 +346,31 @@ useEffect(() => {
     }
   };
 
+  const [showComponent, setShowComponent] = useState(false);
+  const handleLoadComponentTrue = () => {
+    setShowComponent(true); // Beim Klick wird die Komponente sichtbar
+  };
+  const handleLoadComponentFalse  = () => {
+    setShowComponent(false); // Beim Klick wird die Komponente sichtbar
+  };
+
+
   return (
+    
     <div className="space-y-4">
+            {showComponent && <DetailedWeatherComponentInTheMap />}
+            {showComponent && <DetailedForecastZiel />}
+
+            {showComponent && 
+            <button
+            onClick={handleLoadComponentFalse}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Wettervorhersage ausblenden
+          </button>
+            }
+            
+
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
         <GoogleMap
           mapContainerStyle={containerStyle}
@@ -364,9 +390,17 @@ useEffect(() => {
         </GoogleMap>
       </LoadScript>
 
+
       <div className="space-y-2">
         <div className="flex gap-4">
           <div className="flex-1">
+
+          <button
+        onClick={handleLoadComponentTrue}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Lade Komponente
+      </button>
             <p className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
   Startzeit: {routeInfo.startTime}
 </p>
