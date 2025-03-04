@@ -108,30 +108,46 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
   };
 
   const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefined, type: 'start' | 'end') => {
-    if (places && places.length > 0) {
-      const place = places[0];
-      const location = place.geometry?.location;
-      
-      if (location) {
-        const lat = location.lat();
-        const lng = location.lng();
+    try {
+        if (!places || places.length === 0) {
+            console.error(`[${type}] No places found.`);
+            return;
+        }
+
+        const place = places[0];
+
+        if (!place.geometry || !place.geometry.location) {
+            console.error(`[${type}] Selected place has no geometry or location.`);
+            return;
+        }
+
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
         const postalCode = place.address_components?.find(
-          component => component.types.includes('postal_code')
-        )?.long_name || '';
+            component => component.types.includes('postal_code')
+        )?.long_name || 'Unbekannt';
+
+        // Debug-Logging
+        console.log(`[${type}] Selected place:`, place.formatted_address);
+        console.log(`[${type}] Coordinates: ${lat},${lng}`);
+        console.log(`[${type}] Postal code: ${postalCode}`);
 
         // Koordinaten an Parent weitergeben
         onPickLocation(type, `${lat},${lng}`);
 
         // Form-Daten aktualisieren
         setRouteData(prev => ({
-          ...prev,
-          [`${type}Point`]: `${lat},${lng}`,
-          [`${type}Address`]: place.formatted_address || '',
-          [`${type}PostalCode`]: postalCode
+            ...prev,
+            [`${type}Point`]: `${lat},${lng}`,
+            [`${type}Address`]: place.formatted_address || '',
+            [`${type}PostalCode`]: postalCode
         }));
-      }
+    } catch (error) {
+        console.error(`[${type}] Error during place selection handling:`, error);
     }
-  };
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
