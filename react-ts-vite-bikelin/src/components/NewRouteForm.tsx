@@ -25,7 +25,8 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
     setStartLocation, 
     setEndLocation, 
     setStartAddress, 
-    setEndAddress 
+    setEndAddress,
+    setCalculateEnabled,
   } = useRoute();
 
 
@@ -188,7 +189,7 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
     });
     setStartAddress(routeData.startAddress);
     setEndAddress(routeData.endAddress);
-
+    setCalculateEnabled(true)
     if (routeData.saveRoute) {
       try {
         await axios.post(

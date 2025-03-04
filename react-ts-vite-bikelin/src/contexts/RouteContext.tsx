@@ -11,12 +11,13 @@ const defaultRouteInfo: RouteInfo = {
   endLocation: null,
   arrivalTime: '',
   arrivalTimeUnix: 0,
-
+  calculateEnabled: false,
 };
 
 // Standardwerte für den Context
 const defaultContextValue: RouteContextType = {
   routeInfo: defaultRouteInfo,
+  setCalculateEnabled: () => {},
   setStartTime: () => {},
   setStartTimeUnix: () => {},
   setArrivalTime: () => {},  // ✅ Richtige Funktion
@@ -69,10 +70,18 @@ export const RouteProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const setEndAddress = (address: string) => {
     setRouteInfo(prev => ({ ...prev, endAddress: address }));
   };
+  const setCalculateEnabled = (bool: boolean) => {
+    setRouteInfo(prev => ({
+        ...prev,
+        calculateEnabled: bool
+    }));
+};
+
 
   return (
     <RouteContext.Provider value={{
       routeInfo,
+      setCalculateEnabled,
       setStartTime,
       setArrivalTimeUnix,
       setArrivalTime,  

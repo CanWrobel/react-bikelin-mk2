@@ -141,8 +141,10 @@ useEffect(() => {
   // Calculate route when both markers are set
   useEffect(() => {
         console.log('🔵 MapPicker received coordinates:', coordinates);
-
-    if (startMarker && endMarker) {
+        if (!routeInfo.calculateEnabled) {
+          console.log('🔒 Route calculation is disabled.');
+          return;
+        }    if (startMarker && endMarker) {
       const startStr = `${startMarker.lat.toFixed(6)},${startMarker.lng.toFixed(6)}`;
       const endStr = `${endMarker.lat.toFixed(6)},${endMarker.lng.toFixed(6)}`;
       const routeKey = `${startStr}|${endStr}`;
@@ -163,7 +165,7 @@ useEffect(() => {
       lastRouteRequest.current = routeKey;
       calculateRoute(startMarker, endMarker);
     }
-  }, [startMarker, endMarker]);
+  }, [startMarker, endMarker, routeInfo.calculateEnabled]);
 
   // Update arrival time when duration and start time change
   useEffect(() => {
@@ -358,17 +360,9 @@ useEffect(() => {
   return (
     
     <div className="space-y-4">
-            {showComponent && <DetailedWeatherComponentInTheMap />}
-            {showComponent && <DetailedForecastZiel />}
 
-            {showComponent && 
-            <button
-            onClick={handleLoadComponentFalse}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Wettervorhersage ausblenden
-          </button>
-            }
+
+
             
 
       <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
@@ -389,7 +383,16 @@ useEffect(() => {
           {directions && <DirectionsRenderer directions={directions} />}
         </GoogleMap>
       </LoadScript>
-
+      {showComponent && 
+            <button
+            onClick={handleLoadComponentFalse}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Wettervorhersage für Start und Ziel ausblenden
+          </button>
+            }
+            {showComponent && <DetailedWeatherComponentInTheMap />}
+            {showComponent && <DetailedForecastZiel />}
 
       <div className="space-y-2">
         <div className="flex gap-4">
@@ -399,7 +402,7 @@ useEffect(() => {
         onClick={handleLoadComponentTrue}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
-        Lade Komponente
+        Wettervorhersage für Start und Ziel einblenden
       </button>
             <p className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
   Startzeit: {routeInfo.startTime}

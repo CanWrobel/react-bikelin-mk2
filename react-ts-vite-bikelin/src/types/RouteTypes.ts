@@ -8,10 +8,12 @@ export interface RouteInfo {
     endLocation: { lat: number, lng: number } | null;
     arrivalTime: string;
     arrivalTimeUnix: number;
+    calculateEnabled: boolean;
   }
   
   export interface RouteContextType {
     routeInfo: RouteInfo;
+    setCalculateEnabled: (bool: boolean) => void;
     setStartTime: (time: string) => void;
     setStartTimeUnix: (timeUnix: number) => void;
     setArrivalTime: (arrivalTime: string) => void;
