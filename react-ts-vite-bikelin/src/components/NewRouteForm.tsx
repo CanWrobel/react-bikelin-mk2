@@ -258,7 +258,18 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
         value={routeData.startPoint}
         readOnly
       />
-
+      <div>
+ <label htmlFor="departureTime">Departure Time</label>
+ <input
+   id="departureTime"
+   type="datetime-local"
+   name="departureTime"
+   value={routeData.departureTime}
+   onChange={handleChange}
+   style={{ width: '200px', marginTop: '5px' }}
+   data-date-format="DD.MM.YYYY HH:mm"
+ />
+</div>
       <h3>End Point Details</h3>
       <StandaloneSearchBox
         onLoad={onEndLoad}
@@ -301,20 +312,9 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
         onChange={handleChange}
         wrap="soft"
       />
-<div>
- <label htmlFor="departureTime">Departure Time</label>
- <input
-   id="departureTime"
-   type="datetime-local"
-   name="departureTime"
-   value={routeData.departureTime}
-   onChange={handleChange}
-   style={{ width: '200px', marginTop: '5px' }}
-   data-date-format="DD.MM.YYYY HH:mm"
- />
-</div>
+
       <button type="button" style={{ backgroundColor: routeData.saveRoute ? 'green' : 'gray', color: 'white' }} onClick={() => toggleSaveRoute(routeData, setRouteData)}>
-        {routeData.saveRoute ? 'Route wird gespeichert' : 'Route wird nicht gespeichert'}
+        {routeData.saveRoute ? 'Route speichern' : ' Route speichern'}
       </button>
       <button  type="submit">Calculate Route</button>
       <button type="button" onClick={onClose}>Cancel</button>
