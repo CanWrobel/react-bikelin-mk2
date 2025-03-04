@@ -4,18 +4,23 @@ import { RouteInfo, RouteContextType } from '../types/RouteTypes';
 // Standardwerte für die RouteInfo
 const defaultRouteInfo: RouteInfo = {
   startTime: 'default',
+  startTimeUnix: 0,
   startLocation: null,
   startAddress: 'start',
   endAddress: 'end',
   endLocation: null,
-  arrivalTime: ''
+  arrivalTime: '',
+  arrivalTimeUnix: 0,
+
 };
 
 // Standardwerte für den Context
 const defaultContextValue: RouteContextType = {
   routeInfo: defaultRouteInfo,
   setStartTime: () => {},
-  setArrivalTime: () => {},
+  setStartTimeUnix: () => {},
+  setArrivalTime: () => {},  // ✅ Richtige Funktion
+  setArrivalTimeUnix: () => {},
   setStartLocation: () => {},
   setEndLocation: () => {},
   setStartAddress: () => {},
@@ -36,10 +41,18 @@ export const RouteProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const setStartTime = (time: string) => {
     setRouteInfo(prev => ({ ...prev, startTime: time }));
   };
-
-  const setDuration = (duration: string) => {
-    setRouteInfo(prev => ({ ...prev, arrivalTime: duration }));
+  const setStartTimeUnix = (timeUnix: number) => {
+    setRouteInfo(prev => ({ ...prev, startTimeUnix: timeUnix }));
   };
+
+  const setArrivalTime = (arrivalTime: string) => {
+    setRouteInfo(prev => ({ ...prev, arrivalTime }));
+  };
+
+  const setArrivalTimeUnix = (arrivalTimeUnix: number) => {
+    setRouteInfo(prev => ({ ...prev, arrivalTimeUnix: arrivalTimeUnix }));
+  };
+  
 
   const setStartLocation = (location: { lat: number; lng: number }) => {
     setRouteInfo(prev => ({ ...prev, startLocation: location }));
@@ -61,7 +74,9 @@ export const RouteProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <RouteContext.Provider value={{
       routeInfo,
       setStartTime,
-      setArrivalTime: setDuration,
+      setArrivalTimeUnix,
+      setArrivalTime,  
+      setStartTimeUnix,
       setStartLocation,
       setEndLocation,
       setStartAddress,

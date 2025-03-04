@@ -20,6 +20,7 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
   const { 
     routeInfo, 
     setStartTime, 
+    setStartTimeUnix,
     setArrivalTime: setDuration, 
     setStartLocation, 
     setEndLocation, 
@@ -46,7 +47,9 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
     endPoint: '',
     description: '',
     saveRoute: true,
-    departureTime: new Date().toISOString().slice(0, 16), // Format: "YYYY-MM-DDThh:mm"
+    // departureTime: new Date().toISOString().slice(0, 16), // Format: "YYYY-MM-DDThh:mm"
+
+    departureTime: new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16)
 
   });
 
@@ -54,9 +57,13 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
   const [endSearchBox, setEndSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   useEffect(() => {
     // Set the start time to now only when the component mounts
-    const now = new Date().toISOString().slice(0, 16); // Format: "YYYY-MM-DDThh:mm"
-    setStartTime(now);
-    setRouteData(prev => ({ ...prev, departureTime: now }));
+    // const nowHuman = new Date().toISOString().slice(0, 16); // Format: "YYYY-MM-DDThh:mm"
+    const nowHuman = new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16)
+
+    setStartTime(nowHuman);
+    const nowUnix = Math.floor(Date.now() / 1000);
+    setStartTimeUnix(nowUnix);
+    setRouteData(prev => ({ ...prev, departureTime: nowHuman }));
   }, []);
   // Wenn eine neue Position vom MapPicker kommt, hole die Adresse
   React.useEffect(() => {

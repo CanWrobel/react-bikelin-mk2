@@ -90,7 +90,7 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
         </>
       )}
 
-      {isAuthenticated && activeMenu === null && location.pathname === '/' && (
+      {/* {isAuthenticated && activeMenu === null && location.pathname === '/' && (
         <>
           <button onClick={() => setActiveMenu('incident')}>Neuer Incident</button>
           <button onClick={() => navigate('/incidents')}>Incidents Verwalten</button>
@@ -99,7 +99,20 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
 
 
         </>
-      )}
+      )} */}
+      {activeMenu === null && location.pathname === '/' && (
+  <>
+    {isAuthenticated && (
+      <>
+        <button onClick={() => setActiveMenu('incident')}>Neuer Incident</button>
+        <button onClick={() => navigate('/incidents')}>Incidents Verwalten</button>
+        <button onClick={() => navigate('/routes')}>Routen Verwalten</button>
+      </>
+    )}
+    <button onClick={() => setActiveMenu('route')}>Neue Route</button>
+  </>
+)}
+
 
       {activeMenu === 'incident' && (
         <div>
