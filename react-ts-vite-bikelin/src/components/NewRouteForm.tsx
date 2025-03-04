@@ -68,6 +68,8 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
   // Wenn eine neue Position vom MapPicker kommt, hole die Adresse
   React.useEffect(() => {
     if (selectedLocation) {
+      console.log('🟢 selectedLocation received in NewRouteForm:', selectedLocation);
+
       const { type, lat, lng } = selectedLocation;
       
       // Koordinaten im Format speichern
@@ -107,47 +109,70 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
     }
   };
 
-  const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefined, type: 'start' | 'end') => {
-    try {
-        if (!places || places.length === 0) {
-            console.error(`[${type}] No places found.`);
-            return;
-        }
+ // Updated handlePlaceSelection function with better error handling
+const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefined, type: 'start' | 'end') => {
+  console.log('🟡 Place selected:');
 
-        const place = places[0];
-
-        if (!place.geometry || !place.geometry.location) {
-            console.error(`[${type}] Selected place has no geometry or location.`);
-            return;
-        }
-
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-
-        const postalCode = place.address_components?.find(
-            component => component.types.includes('postal_code')
-        )?.long_name || 'Unbekannt';
-
-        // Debug-Logging
-        console.log(`[${type}] Selected place:`, place.formatted_address);
-        console.log(`[${type}] Coordinates: ${lat},${lng}`);
-        console.log(`[${type}] Postal code: ${postalCode}`);
-
-        // Koordinaten an Parent weitergeben
-        onPickLocation(type, `${lat},${lng}`);
-
-        // Form-Daten aktualisieren
-        setRouteData(prev => ({
-            ...prev,
-            [`${type}Point`]: `${lat},${lng}`,
-            [`${type}Address`]: place.formatted_address || '',
-            [`${type}PostalCode`]: postalCode
-        }));
-    } catch (error) {
-        console.error(`[${type}] Error during place selection handling:`, error);
+  try {
+    if (!places || places.length === 0) {
+      console.error(`[${type}] No places found.`);
+      return;
     }
-};
 
+    const place = places[0];
+
+    if (!place.geometry || !place.geometry.location) {
+      console.error(`[${type}] Selected place has no geometry or location.`);
+      return;
+    }
+
+    // Get coordinates safely
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error(`[${type}] Invalid coordinates: lat=${lat}, lng=${lng}`);
+      return;
+    }
+
+    // Format coordinates with fixed precision to avoid floating point issues
+    const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+
+    // Get postal code safely
+    let postalCode = 'Unknown';
+    try {
+      postalCode = place.address_components?.find(
+        component => component.types.includes('postal_code')
+      )?.long_name || 'Unknown';
+    } catch (err) {
+      console.warn(`[${type}] Error extracting postal code:`, err);
+    }
+
+    // Get formatted address safely
+    const formattedAddress = place.formatted_address || '';
+
+    // Debug-Logging
+    console.log(`[${type}] Selected place:`, formattedAddress);
+    console.log(`[${type}] Coordinates: ${coordinates}`);
+    console.log(`[${type}] Postal code: ${postalCode}`);
+
+    // Update state safely with a setTimeout to avoid React state update conflicts
+    setTimeout(() => {
+      // Notify parent component first
+      onPickLocation(type, coordinates);
+
+      // Then update local state
+      setRouteData(prev => ({
+        ...prev,
+        [`${type}Point`]: coordinates,
+        [`${type}Address`]: formattedAddress,
+        [`${type}PostalCode`]: postalCode
+      }));
+    }, 0);
+  } catch (error) {
+    console.error(`[${type}] Error during place selection handling:`, error);
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -303,6 +328,7 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
         value={routeData.endPoint}
         readOnly
       />
+      <button  type="submit">Calculate Route</button>
 
       <h3>Route Description</h3>
       <textarea
@@ -316,7 +342,6 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
       <button type="button" style={{ backgroundColor: routeData.saveRoute ? 'green' : 'gray', color: 'white' }} onClick={() => toggleSaveRoute(routeData, setRouteData)}>
         {routeData.saveRoute ? 'Route speichern' : ' Route speichern'}
       </button>
-      <button  type="submit">Calculate Route</button>
       <button type="button" onClick={onClose}>Cancel</button>
     </form>
   );
