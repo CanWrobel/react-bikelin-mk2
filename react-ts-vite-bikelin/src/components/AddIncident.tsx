@@ -8,7 +8,6 @@ interface AddIncidentProps {
 const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
   const { username, token } = useUser();
   
-  // Aktuelles Datum und Uhrzeit berechnen
   const getTodayDate = () => new Date().toISOString().split('T')[0];
   const getCurrentTime = () => new Date().toTimeString().split(' ')[0].slice(0, 5);
 
@@ -17,8 +16,8 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
     description: '',
     dangerLevel: 'unknown',
     category: 'good',
-    date: getTodayDate(), // Standardwert: heute
-    time: getCurrentTime(), // Standardwert: jetzt
+    date: getTodayDate(), 
+    time: getCurrentTime(), 
     timeCategory: 'temporary',
     street: '',
     zip: '',
@@ -63,15 +62,15 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
           description: '',
           dangerLevel: 'unknown',
           category: 'good',
-          date: getTodayDate(), // Reset zu heute
-          time: getCurrentTime(), // Reset zu jetzt
+          date: getTodayDate(), 
+          time: getCurrentTime(), 
           timeCategory: 'temporary',
           street: '',
           zip: '',
           city: '',
         });
         setImage(null);
-        onClose(); // Schließt die Form
+        onClose(); 
       } else {
         console.error('Failed to upload incident:', await response.text());
       }

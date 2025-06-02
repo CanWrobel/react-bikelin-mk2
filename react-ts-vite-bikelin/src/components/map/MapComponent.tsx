@@ -3,7 +3,6 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google
 import { Incident } from '../../types/Incidents';
 import { useUser } from '../../contexts/UserContext';
 import CustomInfoWindow from './InfoWindow';
-import RouteDetailedWeatherComponent from '../weather/RouteDetailedWeatherComponent';
 
 const containerStyle = {
   width: '100%',
@@ -15,10 +14,9 @@ const center = {
   lng: 13.405
 };
 
-// Extend the component props to include picker mode optional props
 interface MapComponentProps {
   isPickerMode?: boolean;
-  onLocationSelect?: (location: { lat: number, lng: number }) => void;
+  onLocationSelect?: (location: { lat: number, lng: number }) => void;ö
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ isPickerMode, onLocationSelect }) => {

@@ -27,14 +27,14 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
                         'Content-Type': 'application/json'
                     }
                 });
-                setRoutes(response.data);  // Angenommen, die API Antwort ist direkt das Array der Routen
+                setRoutes(response.data);  
             } catch (error) {
                 console.error('Error fetching routes:', error);
             }
         };
 
         fetchRoutes();
-    }, [token]);  // Die Abhängigkeit [token] sorgt dafür, dass die Routen neu geladen werden, wenn sich der Token ändert
+    }, [token]);  
 
     const deleteRoute = async (routeId) => {
         try {
@@ -44,7 +44,7 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
                     'Content-Type': 'application/json'
                 }
             });
-            setRoutes(routes.filter(route => route.id !== routeId)); // Aktualisiert den lokalen Zustand, um die gelöschte Route zu entfernen
+            setRoutes(routes.filter(route => route.id !== routeId)); 
             alert('Route successfully deleted!');
         } catch (error) {
             console.error('Error deleting route:', error);
@@ -86,7 +86,7 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
                             <td>{route.planningData.routeDescription}</td>
                             <td>{formatDate(route.planningData.departureTime)}</td>
                             <td>
-                            <button onClick={() => deleteRoute(route.id)}>Delete</button> {/* Delete-Button mit onClick-Handler */}
+                            <button onClick={() => deleteRoute(route.id)}>Delete</button>
                             </td>
                         </tr>
                     ))}

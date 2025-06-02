@@ -8,7 +8,6 @@ import { useUser } from '../contexts/UserContext';
 import RouteList from './RoutesList';
 // @ts-ignore
 import WeatherComponent from './weather/WeatherComponent';
-import { useRoute } from '../contexts/RouteContext';
 
 const MainScreen: React.FC = () => {
   const [menuActive, setMenuActive] = useState(false);
@@ -16,7 +15,6 @@ const MainScreen: React.FC = () => {
   const { username, token } = useUser();
   const location = useLocation();
   const navigate = useNavigate();
-  // States für die Koordinaten-Verwaltung
   const [pickingType, setPickingType] = useState<'start' | 'end'>('start');
   const [selectedCoordinates, setSelectedCoordinates] = useState<string>('');
   const [selectedMapLocation, setSelectedMapLocation] = useState<{
@@ -25,7 +23,6 @@ const MainScreen: React.FC = () => {
     lng: number;
   } | null>(null);
 
-  const { routeInfo } = useRoute();
 
 
 
@@ -34,7 +31,6 @@ const MainScreen: React.FC = () => {
   };
 
   const handleLocationSelect = (location: { lat: number, lng: number }) => {
-    // Speichere die ausgewählte Position mit dem aktuellen Typ
     console.log(`Selected: ${location.lat}, ${location.lng}`);
     setSelectedMapLocation({
       type: pickingType,
@@ -48,13 +44,8 @@ const MainScreen: React.FC = () => {
     setSelectedMapLocation(null);
   };
 
-  const handleRouteCalculate = () => {
-    setIsPickerMode(false);
-    setSelectedCoordinates('');
-    setSelectedMapLocation(null);
-  };
+ 
 
-  // Handler für die Koordinaten von der RouteForm
   const handlePickLocation = (type: 'start' | 'end', coordinates: string) => {
     setIsPickerMode(true);
     setPickingType(type);
@@ -74,15 +65,7 @@ const MainScreen: React.FC = () => {
         <button onClick={toggleMenu}>☰</button>
         <h3>Bikelin-Navigator 2.0 {username ? `Hallo, ${username}      ` + "|" : ''}</h3>
         <button onClick={() => navigate('/weather')}>Wettervorhersage für Berlin</button>
-        <button 
-  onClick={() => {
-    console.log(JSON.stringify(routeInfo, null, 2));  // Log in der Konsole
-    alert(JSON.stringify(routeInfo));                  // Alert-Fenster mit JSON
-  }}
-  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
->
-  Gib Route Context
-</button>
+
       </div>
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>

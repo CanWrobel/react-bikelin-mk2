@@ -1,4 +1,7 @@
-
+html, body {
+  background-color: white !important;
+  color: black !important;
+}
 
 
 input[type="text"],
@@ -17,9 +20,9 @@ p {
 }
 
 .burgerMenu button {
-  margin-top: 2%; /* Abstand oberhalb jedes Buttons */
-  margin-bottom: 0; /* Kein Abstand unterhalb, wenn du konsistentes Verhalten willst */
-  width: 90%; /* Optional: Damit die Buttons nicht zu schmal wirken */
+  margin-top: 2%; 
+  margin-bottom: 0; 
+  width: 90%; 
 }
 
 
@@ -48,18 +51,21 @@ p {
 
 
 label {
-  color: #333;  /* Dunkelgraue Schriftfarbe für bessere Lesbarkeit */
-  display: block;  /* Jedes Label wird als Block angezeigt, damit die Eingabefelder darunter erscheinen */
-  margin-bottom: 5px;  /* Etwas Abstand unter jedem Label */
+  color: #333;  
+  display: block;  
+  margin-bottom: 5px;  
+}
+
+.scroll-locked {
+  overflow: hidden;
+  height: 100vh;
 }
 
 
-
-/* Stil für den gesamten Bildschirm */
 .container {
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  /* overflow: hidden; */
   background-color: white;
 }
 
@@ -72,16 +78,15 @@ label {
 }
 
 .header button {
-  margin-right: 20px; /* Abstand zwischen Button und Titel */
+  margin-right: 20px; 
 }
 
 .header h3 {
-  margin: 0; /* Entfernt den Standardabstand um die Überschrift */
-  color: #333; /* Farbe der Überschrift */
+  margin: 0; 
+  color: #333; 
 }
 
 
-/* Hauptbereich für Map und Menü */
 .main-area {
   height: 90%;
   position: relative;
@@ -89,22 +94,22 @@ label {
 
 .burgerMenu {
   position: absolute;
-  top: 2%; /* Beginnt unterhalb des Headers */
+  top: 2%; 
   left: 0;
   width: 250px;
-  height: 90%; /* Passt sich an die verbleibende Höhe an */
+  height: 90%; 
   transition: transform 0.3s ease;
   transform: translateX(-100%);
-  background-color: white; /* Hintergrundfarbe des Menüs */
+  background-color: white; 
   z-index: 1000;
-  padding: 10px 20px; /* Weniger Platz oben */
+  padding: 10px 20px; 
   box-sizing: border-box;
   display: flex;
-  flex-direction: column; /* Ordnet die Elemente vertikal an */
-  align-items: flex-start; /* Links ausgerichtet */
-  gap: 10px; /* Abstand zwischen den Elementen */
-  font-family: Arial, sans-serif; /* Stil des Textes, angepasst am Titel */
-  font-size: 16px; /* Größe des Textes */
+  flex-direction: column; 
+  align-items: flex-start; 
+  gap: 10px; 
+  font-family: Arial, sans-serif;
+  font-size: 16px; 
 }
 
 
@@ -115,16 +120,15 @@ label {
 }
 
 .burgerMenu a {
-  display: block; /* Stellt sicher, dass jeder Link als Blockelement dargestellt wird */
-  color: #333; /* Dunkelgraue Textfarbe */
-  text-decoration: none; /* Keine Unterstreichung */
-  padding: 8px 0; /* Abstand oben und unten */
-  width: 100%; /* Sichert, dass der Link die volle Breite einnimmt */
+  display: block; 
+  color: #333; 
+  text-decoration: none; 
+  padding: 8px 0; 
+  width: 100%; 
 }
 
 
 
-/* Map Container Stil */
 .mapContainer {
   height: 100%;
   transition: margin-left 0.3s ease;

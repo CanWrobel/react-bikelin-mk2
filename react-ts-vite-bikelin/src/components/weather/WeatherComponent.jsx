@@ -153,7 +153,7 @@ const WeatherComponent = () => {
                   >
                     {item.main.temp.toFixed(0)} °C{" "}
                     <img
-                      src="https://canwrobel.de/static/Windicon.png"
+                      src="https://media.istockphoto.com/id/1368763816/de/vektor/windblasvektor-symbol-luft-puff-symbol.jpg?s=612x612&w=0&k=20&c=2m6CAD1_6bQGUbT6z4TNVdxRTEu-sWaE4BUwpwk3-PQ="
                       className="icon"
                       style={{
                         width: "20px",

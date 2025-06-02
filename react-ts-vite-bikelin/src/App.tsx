@@ -20,15 +20,10 @@ const App = () => {
   
   return (
     <Router>
-      {console.log('Router wird gerendert')}
       <UserProvider>
-        {console.log('UserProvider wird gerendert')}
         <RouteProvider>
-          {console.log('RouteProvider wird gerendert')}
           <div className="container">
-            {console.log('Container div wird gerendert')}
             <Routes>
-              {console.log('Routes werden initialisiert')}
               <Route path="/" element={<MainScreen />} />
               <Route path="/incidents" element={<MainScreen />} />
               <Route path="/routes" element={<MainScreen />} />

@@ -75,11 +75,17 @@ const DetailedWeatherComponentInTheMap = () => {
                   Rain: <b>{forecastStart.rain["1h"]}</b> mm/h
                 </div>
               )}
-              
             </div>
           </div>
         </div>
-
+        <div className="rw-container-right">
+          <img
+            src={`http://openweathermap.org/img/wn/${forecastStart.weather[0].icon}@2x.png`}
+            alt={forecastStart.weather[0].description}
+            width="120"
+            height="120"
+          />
+        </div>
       </div>
     </div>
   );

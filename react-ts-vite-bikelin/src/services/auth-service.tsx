@@ -1,7 +1,7 @@
 import Keycloak from 'keycloak-js';
 
 const keycloakConfig = {
-  url: 'http://141.45.146.183:8090/auth',
+  url: 'http://141.45.191.145:8090/auth',
   realm: 'BikeNavigator',
   clientId: 'AngularBikeNavigator',
   redirectUri: 'http://localhost:4200', 

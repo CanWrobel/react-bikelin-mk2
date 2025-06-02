@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useRoute } from '../../contexts/RouteContext';
-import DetailedWeatherComponent from '../weather/DetailedWeatherComponent';
 import DetailedWeatherComponentInTheMap from '../weather/DetailedWeatherInTheMap';
 import DetailedForecastZiel from '../weather/DetailedForecastZiel';
 
-// Global lock to prevent concurrent coordinate updates
 declare global {
   interface Window {
     isCoordinateUpdateLocked?: boolean;
@@ -41,7 +39,6 @@ const MapPicker: React.FC<MapPickerProps> = ({
     setArrivalTimeUnix
   } = useRoute();
   
-  // State variables
   const [startMarker, setStartMarker] = useState<{ lat: number, lng: number } | null>(null);
   const [endMarker, setEndMarker] = useState<{ lat: number, lng: number } | null>(null);
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
@@ -51,19 +48,14 @@ const MapPicker: React.FC<MapPickerProps> = ({
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [mapZoom, setMapZoom] = useState(10);
   
-  // Reference to track if a route calculation is in progress
   const isCalculatingRoute = useRef(false);
   
-  // Reference to store the last calculated route points to prevent duplicate calls
   const lastRouteRequest = useRef<string | null>(null);
 
-  // Process incoming coordinates with safety checks
- // Fix for the useEffect that processes incoming coordinates
 useEffect(() => {
   if (!coordinates) return;
   
   try {
-    // Prevent concurrent updates with a lock
     if (window.isCoordinateUpdateLocked) {
       console.log('Coordinate update locked, skipping this update');
       return;
@@ -71,7 +63,6 @@ useEffect(() => {
     
     window.isCoordinateUpdateLocked = true;
     
-    // Parse coordinates with validation
     const parts = coordinates.split(',');
     if (parts.length !== 2) {
       console.error(`Invalid coordinates format: ${coordinates}`);
@@ -90,7 +81,6 @@ useEffect(() => {
     
     const location = { lat, lng };
     
-    // Check if the marker already has these coordinates to prevent loop
     if (pickingType === 'start' && startMarker && 
         startMarker.lat === location.lat && 
         startMarker.lng === location.lng) {
@@ -109,11 +99,9 @@ useEffect(() => {
     
     console.log(`Setting ${pickingType} marker to:`, location);
     
-    // Center map on new location
     setMapCenter(location);
     setMapZoom(14);
     
-    // Update appropriate marker based on picking type
     setTimeout(() => {
       if (pickingType === 'start') {
         setStartMarker(location);
@@ -121,7 +109,6 @@ useEffect(() => {
         setEndMarker(location);
       }
       
-      // Notify parent with a delay to avoid race conditions
       setTimeout(() => {
         onSelect(location);
         window.isCoordinateUpdateLocked = false;
@@ -133,12 +120,10 @@ useEffect(() => {
   }
   
   return () => {
-    // Ensure lock is released if component unmounts during processing
     window.isCoordinateUpdateLocked = false;
   };
 }, [coordinates, pickingType, onSelect, startMarker, endMarker]);
 
-  // Calculate route when both markers are set
   useEffect(() => {
         console.log('🔵 MapPicker received coordinates:', coordinates);
         if (!routeInfo.calculateEnabled) {
@@ -149,25 +134,21 @@ useEffect(() => {
       const endStr = `${endMarker.lat.toFixed(6)},${endMarker.lng.toFixed(6)}`;
       const routeKey = `${startStr}|${endStr}`;
       
-      // Skip if this exact route was already calculated
       if (routeKey === lastRouteRequest.current) {
         console.log('Skipping duplicate route calculation');
         return;
       }
       
-      // Skip if we're already calculating a route
       if (isCalculatingRoute.current) {
         console.log('Route calculation already in progress, skipping');
         return;
       }
       
-      // Update the route request reference
       lastRouteRequest.current = routeKey;
       calculateRoute(startMarker, endMarker);
     }
   }, [startMarker, endMarker, routeInfo.calculateEnabled]);
 
-  // Update arrival time when duration and start time change
   useEffect(() => {
     if (duration && startTime) {
       try {
@@ -179,7 +160,6 @@ useEffect(() => {
     }
   }, [duration, startTime, setArrivalTime]);
 
-  // Handle map click with debounce
   const handleMapClick = useCallback((event: google.maps.MapMouseEvent) => {
     try {
       if (!event.latLng) {
@@ -197,7 +177,6 @@ useEffect(() => {
       
       const location = { lat, lng };
       
-      // Debounce to prevent duplicate calls
       if (window.isCoordinateUpdateLocked) {
         console.log('Map click ignored - update already in progress');
         return;
@@ -205,14 +184,12 @@ useEffect(() => {
       
       window.isCoordinateUpdateLocked = true;
       
-      // Update appropriate marker
       if (pickingType === 'start') {
         setStartMarker(location);
       } else {
         setEndMarker(location);
       }
       
-      // Notify parent with a delay
       setTimeout(() => {
         onSelect(location);
         window.isCoordinateUpdateLocked = false;
@@ -223,7 +200,6 @@ useEffect(() => {
     }
   }, [pickingType, onSelect]);
 
-  // Calculate route between points with error handling
   const calculateRoute = useCallback((start: { lat: number, lng: number }, end: { lat: number, lng: number }) => {
     if (!start || !end) return;
     
@@ -233,7 +209,6 @@ useEffect(() => {
     }
 
     try {
-      // Set the calculating flag to prevent duplicate calls
       isCalculatingRoute.current = true;
       console.log('Calculating route...', start, end);
       
@@ -245,7 +220,6 @@ useEffect(() => {
           travelMode: google.maps.TravelMode.BICYCLING,
         },
         (result, status) => {
-          // Reset the calculating flag
           isCalculatingRoute.current = false;
           
           if (status === google.maps.DirectionsStatus.OK && result) {
@@ -288,10 +262,10 @@ useEffect(() => {
     }
   }, [routeInfo, setArrivalTime, setArrivalTimeUnix]);
 
-  // Parse duration string and calculate arrival time
+  
   const calculateArrivalTime = (startTime: string, durationText: string): string => {
     try {
-      // Parse start time
+      
       const [startHours, startMinutes] = startTime.split(':').map(Number);
       if (isNaN(startHours) || isNaN(startMinutes)) {
         throw new Error(`Invalid start time format: ${startTime}`);
@@ -300,16 +274,16 @@ useEffect(() => {
       const startDate = new Date();
       startDate.setHours(startHours, startMinutes, 0, 0);
       
-      // Parse duration text with better regex
+      
       let totalMinutes = 0;
       
-      // Handle "X hour(s) Y min" format
+      
       const hourMatch = durationText.match(/(\d+)\s*hour/i);
       if (hourMatch && hourMatch[1]) {
         totalMinutes += parseInt(hourMatch[1], 10) * 60;
       }
       
-      // Handle "Y min" format
+      
       const minMatch = durationText.match(/(\d+)\s*min/i);
       if (minMatch && minMatch[1]) {
         totalMinutes += parseInt(minMatch[1], 10);
@@ -317,10 +291,10 @@ useEffect(() => {
       
       if (totalMinutes === 0) {
         console.warn(`Could not parse duration: "${durationText}"`);
-        return startTime; // Return unchanged if parsing fails
+        return startTime;
       }
       
-      // Calculate arrival time
+      
       startDate.setMinutes(startDate.getMinutes() + totalMinutes);
       
       const hours = String(startDate.getHours()).padStart(2, '0');
@@ -328,16 +302,14 @@ useEffect(() => {
       return `${hours}:${minutes}`;
     } catch (error) {
       console.error('Error in calculateArrivalTime:', error);
-      return startTime; // Return original on error
+      return startTime; 
     }
   };
 
-  // Handle start time change
   const handleStartTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStartTime = e.target.value;
     setStartTimeOnForm(newStartTime);
     
-    // Recalculate arrival time if we have duration
     if (duration) {
       try {
         const arrivalTime = calculateArrivalTime(newStartTime, duration);
@@ -350,13 +322,24 @@ useEffect(() => {
 
   const [showComponent, setShowComponent] = useState(false);
   const handleLoadComponentTrue = () => {
-    setShowComponent(true); // Beim Klick wird die Komponente sichtbar
+    setShowComponent(true); 
   };
-  const handleLoadComponentFalse  = () => {
-    setShowComponent(false); // Beim Klick wird die Komponente sichtbar
+  const handleLoadComponentFalse = () => {
+    const container = document.querySelector('.container');
+    if (container) {
+      container.style.overflow = 'auto'; // oder 'scroll' je nach Wunsch
+      container.style.height = 'auto';   // wichtig, sonst bleibt 100vh bestehen
+    }
+  
+    setShowComponent(false);
   };
 
-
+  const openGoogleMapsRoute = (start: { lat: number; lng: number }, end: { lat: number; lng: number }) => {
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lng}&destination=${end.lat},${end.lng}&travelmode=bicycling`;
+    window.open(url, '_blank');
+  };
+  
+  
   return (
     
     <div className="space-y-4">
@@ -391,33 +374,27 @@ useEffect(() => {
             Wettervorhersage für Start und Ziel ausblenden
           </button>
             }
-            {showComponent && <DetailedWeatherComponentInTheMap />}
-            {showComponent && <DetailedForecastZiel />}
+<div className="flex gap-4">
+    {showComponent && <DetailedWeatherComponentInTheMap />}
+    {showComponent && <DetailedForecastZiel />}
+</div>
+
 
       <div className="space-y-2">
         <div className="flex gap-4">
           <div className="flex-1">
-
+        { !showComponent &&
           <button
         onClick={handleLoadComponentTrue}
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
         Wettervorhersage für Start und Ziel einblenden
-      </button>
+      </button> }
             <p className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
   Startzeit: {routeInfo.startTime}
 </p>
 
-            {/* <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
-              Startzeit
-            </label>
-            <input
-              type="time"
-              id="startTime"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              value={startTime}
-              onChange={handleStartTimeChange}
-            /> */}
+
           </div>
           <div className="flex-1">
             <label htmlFor="arrivalTime" className="block text-sm font-medium text-gray-700">
@@ -441,10 +418,18 @@ useEffect(() => {
           <p>Dauer: {duration}</p>
         </div>
       )}
-
+      <br />
+      <button
+  onClick={() => openGoogleMapsRoute(startMarker!, endMarker!)}
+  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+>
+  Route in Google Maps öffnen
+</button>
+      <br />
       <button
         onClick={onCancel}
         className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        
       >
         Abbrechen
       </button>

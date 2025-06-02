@@ -10,7 +10,7 @@ import { useRoute } from '../contexts/RouteContext';
 interface NewRouteFormProps {
   onClose: () => void;
   onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
-  selectedLocation?: { type: 'start' | 'end', lat: number, lng: number };  // Neue Prop für die vom MapPicker ausgewählte Position
+  selectedLocation?: { type: 'start' | 'end', lat: number, lng: number };  
 
 }
 
@@ -48,39 +48,34 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
     endPoint: '',
     description: '',
     saveRoute: true,
-    // departureTime: new Date().toISOString().slice(0, 16), // Format: "YYYY-MM-DDThh:mm"
 
-    departureTime: new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16)
+    departureTime: new Date(new Date().setHours(new Date().getHours() + 2)).toISOString().slice(0, 16)
 
   });
 
   const [startSearchBox, setStartSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   const [endSearchBox, setEndSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   useEffect(() => {
-    // Set the start time to now only when the component mounts
-    // const nowHuman = new Date().toISOString().slice(0, 16); // Format: "YYYY-MM-DDThh:mm"
-    const nowHuman = new Date(new Date().setHours(new Date().getHours() + 1)).toISOString().slice(0, 16)
+   
+    const nowHuman = new Date(new Date().setHours(new Date().getHours() + 2)).toISOString().slice(0, 16)
 
     setStartTime(nowHuman);
     const nowUnix = Math.floor(Date.now() / 1000);
     setStartTimeUnix(nowUnix);
     setRouteData(prev => ({ ...prev, departureTime: nowHuman }));
   }, []);
-  // Wenn eine neue Position vom MapPicker kommt, hole die Adresse
   React.useEffect(() => {
     if (selectedLocation) {
       console.log('🟢 selectedLocation received in NewRouteForm:', selectedLocation);
 
       const { type, lat, lng } = selectedLocation;
       
-      // Koordinaten im Format speichern
       const coordinates = `${lat},${lng}`;
       setRouteData(prev => ({
         ...prev,
         [`${type}Point`]: coordinates
       }));
 
-      // Adresse von der API holen
       fetchAddress(lng, lat, type);
     }
   }, [selectedLocation]);
@@ -99,7 +94,6 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
       
       console.log('Address response:', response.data);
       
-      // Formular mit den erhaltenen Daten aktualisieren
       setRouteData(prev => ({
         ...prev,
         [`${type}Address`]: response.data
@@ -110,7 +104,6 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
     }
   };
 
- // Updated handlePlaceSelection function with better error handling
 const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefined, type: 'start' | 'end') => {
   console.log('🟡 Place selected:');
 
@@ -127,7 +120,6 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
       return;
     }
 
-    // Get coordinates safely
     const lat = place.geometry.location.lat();
     const lng = place.geometry.location.lng();
     
@@ -136,10 +128,8 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
       return;
     }
 
-    // Format coordinates with fixed precision to avoid floating point issues
     const coordinates = `${lat.toFixed(6)},${lng.toFixed(6)}`;
 
-    // Get postal code safely
     let postalCode = 'Unknown';
     try {
       postalCode = place.address_components?.find(
@@ -149,20 +139,15 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
       console.warn(`[${type}] Error extracting postal code:`, err);
     }
 
-    // Get formatted address safely
     const formattedAddress = place.formatted_address || '';
 
-    // Debug-Logging
     console.log(`[${type}] Selected place:`, formattedAddress);
     console.log(`[${type}] Coordinates: ${coordinates}`);
     console.log(`[${type}] Postal code: ${postalCode}`);
 
-    // Update state safely with a setTimeout to avoid React state update conflicts
     setTimeout(() => {
-      // Notify parent component first
       onPickLocation(type, coordinates);
 
-      // Then update local state
       setRouteData(prev => ({
         ...prev,
         [`${type}Point`]: coordinates,
@@ -240,10 +225,8 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRouteData({ ...routeData, [e.target.name]: e.target.value });
-        // Wenn das geänderte Feld die Startzeit ist, rufe onStartTimeChange auf
         if (e.target.name === 'departureTime') {
           setStartTime(e.target.value);
-          // Directly update the context
         }
   };
 
