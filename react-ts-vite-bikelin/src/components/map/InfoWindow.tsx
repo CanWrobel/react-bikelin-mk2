@@ -1,6 +1,6 @@
 import React from 'react';
 import { InfoWindow } from '@react-google-maps/api';
-import { Incident } from '../../types/Incidents';
+import { Incident } from '../../types/Incidents.ts';
 
 interface InfoWindowProps {
   incident: Incident;

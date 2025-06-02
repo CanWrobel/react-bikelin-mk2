@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
-import { Incident } from '../../types/Incidents';
+import { Incident } from '../../types/Incidents.ts';
 import { useUser } from '../../contexts/UserContext';
 import CustomInfoWindow from './InfoWindow';
 
@@ -16,7 +16,7 @@ const center = {
 
 interface MapComponentProps {
   isPickerMode?: boolean;
-  onLocationSelect?: (location: { lat: number, lng: number }) => void;ö
+  onLocationSelect?: (location: { lat: number, lng: number }) => void;
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ isPickerMode, onLocationSelect }) => {
