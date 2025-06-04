@@ -52,6 +52,9 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
       setUsername(keycloak.tokenParsed.name);
       setToken(keycloak.token);
     };
+    
+    console.log("Full Keycloak object:", keycloak);
+
 
     return () => {
       keycloak.onAuthLogout = undefined;

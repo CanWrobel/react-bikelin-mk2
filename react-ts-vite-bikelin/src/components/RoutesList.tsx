@@ -38,7 +38,7 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
 
     const deleteRoute = async (routeId) => {
         try {
-            await axios.delete(`http://141.45.146.183:8080/route-manager/delete-route?routeId=${routeId}`, {
+            await axios.delete(`http://141.45.191.145:8080/route-manager/delete-route?routeId=${routeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

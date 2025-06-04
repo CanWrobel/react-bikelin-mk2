@@ -361,8 +361,8 @@ useEffect(() => {
             zoomControl: true
           }}
         >
-          {startMarker && <Marker position={startMarker} label="S" />}
-          {endMarker && <Marker position={endMarker} label="E" />}
+          {startMarker && <Marker position={startMarker} label="" />}
+          {endMarker && <Marker position={endMarker} label="" />}
           {directions && <DirectionsRenderer directions={directions} />}
         </GoogleMap>
       </LoadScript>

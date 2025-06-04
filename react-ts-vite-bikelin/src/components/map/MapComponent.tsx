@@ -35,12 +35,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ isPickerMode, onLocationSel
 
     initializeMap();
   }, []);
-
+  const API_BASE = import.meta.env.VITE_API_BASE_URL
   useEffect(() => {
     if (!token) return;
     const fetchIncidents = async () => {
       try {
-        const response = await fetch('http://141.45.146.183:8080/bikelin/api/incidents', {
+        const response = await fetch(`${API_BASE}/incidents`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();

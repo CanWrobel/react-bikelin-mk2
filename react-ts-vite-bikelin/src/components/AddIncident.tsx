@@ -45,10 +45,12 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
     if (image) {
       data.append('image', image);
     }
-
+    const API_BASE = import.meta.env.VITE_API_BASE_URL
     try {
-      const response = await fetch('http://141.45.146.183:8080/bikelin/api/incident/upload', {
-        method: 'POST',
+      // const response = await fetch('http://141.45.146.183:8080/bikelin/api/incident/upload', {
+      const response = await fetch(`${API_BASE}/incidents`, {
+
+      method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
         },
