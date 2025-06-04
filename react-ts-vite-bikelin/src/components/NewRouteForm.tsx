@@ -55,6 +55,8 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
 
   const [startSearchBox, setStartSearchBox] = useState<google.maps.places.SearchBox | null>(null);
   const [endSearchBox, setEndSearchBox] = useState<google.maps.places.SearchBox | null>(null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
    
     const nowHuman = new Date(new Date().setHours(new Date().getHours() + 2)).toISOString().slice(0, 16)
@@ -175,38 +177,38 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
     setStartAddress(routeData.startAddress);
     setEndAddress(routeData.endAddress);
     setCalculateEnabled(true)
-    if (routeData.saveRoute) {
-      try {
-        await axios.post(
-          'http://141.45.146.183:8080/route-manager/calculate-routes',
-          {
-            startString: routeData.startAddress,
-            endString: routeData.endAddress,
-            routeDescription: routeData.description,
-            start: {
-              lon: parseFloat(routeData.startPoint.split(',')[1]),
-              lat: parseFloat(routeData.startPoint.split(',')[0])
-            },
-            end: {
-              lon: parseFloat(routeData.endPoint.split(',')[1]), 
-              lat: parseFloat(routeData.endPoint.split(',')[0])
-            },
-            departureTime: routeData.departureTime,
-            saveRoute: routeData.saveRoute
-          },
-          {
-            headers: {
-              'Accept': 'application/json, text/plain, */*',
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        onClose();
-      } catch (error) {
-        console.error('Error saving route:', error);
-      }
-    }
+    // if (routeData.saveRoute) {
+    //   try {
+    //     await axios.post(
+    //       'http://141.45.146.183:8080/route-manager/calculate-routes',
+    //       {
+    //         startString: routeData.startAddress,
+    //         endString: routeData.endAddress,
+    //         routeDescription: routeData.description,
+    //         start: {
+    //           lon: parseFloat(routeData.startPoint.split(',')[1]),
+    //           lat: parseFloat(routeData.startPoint.split(',')[0])
+    //         },
+    //         end: {
+    //           lon: parseFloat(routeData.endPoint.split(',')[1]), 
+    //           lat: parseFloat(routeData.endPoint.split(',')[0])
+    //         },
+    //         departureTime: routeData.departureTime,
+    //         saveRoute: routeData.saveRoute
+    //       },
+    //       {
+    //         headers: {
+    //           'Accept': 'application/json, text/plain, */*',
+    //           'Authorization': `Bearer ${token}`,
+    //           'Content-Type': 'application/json'
+    //         }
+    //       }
+    //     );
+    //     onClose();
+    //   } catch (error) {
+    //     console.error('Error saving route:', error);
+    //   }
+    // }
    };
   const onStartLoad = (ref: google.maps.places.SearchBox) => setStartSearchBox(ref);
   const onEndLoad = (ref: google.maps.places.SearchBox) => setEndSearchBox(ref);
@@ -323,9 +325,45 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
         wrap="soft"
       />
 
-      <button type="button" style={{ backgroundColor: routeData.saveRoute ? 'green' : 'gray', color: 'white' }} onClick={() => toggleSaveRoute(routeData, setRouteData)}>
+      {/* <button type="button" style={{ backgroundColor: routeData.saveRoute ? 'green' : 'gray', color: 'white' }} onClick={() => toggleSaveRoute(routeData, setRouteData)}>
         {routeData.saveRoute ? 'Route speichern' : ' Route speichern'}
-      </button>
+      </button> */}
+
+<button
+  type="button"
+  style={{ backgroundColor: 'green', color: 'white' }}
+  onClick={async () => {
+    try {
+      await axios.post(`${API_BASE}/routes`, {
+        startString: routeData.startAddress,
+        endString: routeData.endAddress,
+        routeDescription: routeData.description,
+        start: {
+          lon: parseFloat(routeData.startPoint.split(',')[1]),
+          lat: parseFloat(routeData.startPoint.split(',')[0])
+        },
+        end: {
+          lon: parseFloat(routeData.endPoint.split(',')[1]),
+          lat: parseFloat(routeData.endPoint.split(',')[0])
+        },
+        departureTime: routeData.departureTime,
+        saveRoute: true
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      alert('Route gespeichert!');
+    } catch (err) {
+      console.error('Fehler beim Speichern der Route:', err);
+      alert('Fehler beim Speichern');
+    }
+  }}
+>
+  Route speichern
+</button>
+
       <button type="button" onClick={onClose}>Cancel</button>
     </form>
   );

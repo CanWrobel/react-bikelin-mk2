@@ -17,11 +17,13 @@ interface RouteListProps {
 
 const RouteList: React.FC<RouteListProps> = ({ token }) => {
     const [routes, setRoutes] = useState<Route[]>([]);
+    const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
     useEffect(() => {
         const fetchRoutes = async () => {
             try {
-                const response = await axios.get('http://141.45.146.183:8080/route-manager/get-user-routes', {
+                // const response = await axios.get('http://141.45.146.183:8080/route-manager/get-user-routes', {
+                const response = await axios.get(`${API_BASE}/routes`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -38,7 +40,8 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
 
     const deleteRoute = async (routeId) => {
         try {
-            await axios.delete(`http://141.45.191.145:8080/route-manager/delete-route?routeId=${routeId}`, {
+            // await axios.delete(`http://141.45.191.145:8080/route-manager/delete-route?routeId=${routeId}`, {
+            await axios.delete(`${API_BASE}/routes/${routeId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'

@@ -3,9 +3,11 @@ import { useUser } from '../contexts/UserContext';
 
 interface AddIncidentProps {
   onClose: () => void;
+  selectedMapLocation?: { type: 'start' | 'end'; lat: number; lng: number };
+  onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
 }
 
-const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
+const AddIncident: React.FC<AddIncidentProps> = ({ onClose, selectedMapLocation, onPickLocation }) => {
   const { username, token } = useUser();
   
   const getTodayDate = () => new Date().toISOString().split('T')[0];
@@ -22,6 +24,8 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
     street: '',
     zip: '',
     city: '',
+    latitude: '',
+    longitude: '',
   });
   const [image, setImage] = useState<File | null>(null);
 
@@ -34,29 +38,78 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
     setImage(e.target.files ? e.target.files[0] : null);
   };
 
+  // const handleFormSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   const data = new FormData();
+  //   data.append(
+  //     'incident',
+  //     JSON.stringify({ ...formData, username })
+  //   );
+  //   if (image) {
+  //     data.append('image', image);
+  //   }
+  //   const API_BASE = import.meta.env.VITE_API_BASE_URL
+  //   try {
+  //     // const response = await fetch('http://141.45.146.183:8080/bikelin/api/incident/upload', {
+  //     const response = await fetch(`${API_BASE}/incidents`, {
+
+  //     method: 'POST',
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: data,
+  //     });
+
+  //     if (response.ok) {
+  //       console.log('Incident successfully uploaded!');
+  //       setFormData({
+  //         title: '',
+  //         description: '',
+  //         dangerLevel: 'unknown',
+  //         category: 'good',
+  //         date: getTodayDate(), 
+  //         time: getCurrentTime(), 
+  //         timeCategory: 'temporary',
+  //         street: '',
+  //         zip: '',
+  //         city: '',
+  //         latitude: '',
+  //         longitude: '',
+  //       });
+  //       setImage(null);
+  //       onClose(); 
+  //     } else {
+  //       console.error('Failed to upload incident:', await response.text());
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const data = new FormData();
-    data.append(
-      'incident',
-      JSON.stringify({ ...formData, username })
-    );
-    if (image) {
-      data.append('image', image);
-    }
-    const API_BASE = import.meta.env.VITE_API_BASE_URL
+  
+    const incident = {
+      ...formData,
+      username,
+      latitude: parseFloat(formData.latitude),
+      longitude: parseFloat(formData.longitude),
+      zip: parseInt(formData.zip)
+    };
+  
+    const API_BASE = import.meta.env.VITE_API_BASE_URL;
+  
     try {
-      // const response = await fetch('http://141.45.146.183:8080/bikelin/api/incident/upload', {
       const response = await fetch(`${API_BASE}/incidents`, {
-
-      method: 'POST',
+        method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: data,
+        body: JSON.stringify(incident),
       });
-
+  
       if (response.ok) {
         console.log('Incident successfully uploaded!');
         setFormData({
@@ -64,15 +117,17 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
           description: '',
           dangerLevel: 'unknown',
           category: 'good',
-          date: getTodayDate(), 
-          time: getCurrentTime(), 
+          date: getTodayDate(),
+          time: getCurrentTime(),
           timeCategory: 'temporary',
           street: '',
           zip: '',
           city: '',
+          latitude: '',
+          longitude: '',
         });
         setImage(null);
-        onClose(); 
+        onClose();
       } else {
         console.error('Failed to upload incident:', await response.text());
       }
@@ -80,6 +135,7 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
       console.error('Error:', error);
     }
   };
+  
 
   return (
     <form onSubmit={handleFormSubmit} className="incident-form">
@@ -196,8 +252,42 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose }) => {
         Image (optional):
         <input type="file" onChange={handleImageChange} />
       </label>
+      <label>
+  Latitude:
+  <input
+    type="text"
+    name="latitude"
+    value={formData.latitude}
+    onChange={handleInputChange}
+    required
+  />
+</label>
+
+<label>
+  Longitude:
+  <input
+    type="text"
+    name="longitude"
+    value={formData.longitude}
+    onChange={handleInputChange}
+    required
+  />
+</label>
+
+<button
+  type="button"
+  onClick={() => onPickLocation('start', `${formData.latitude},${formData.longitude}`)}
+>
+  Pick on Map
+</button>
+
+
+
+
       <button type="submit">Submit</button>
       <button onClick={onClose}>Zurück</button>
+
+
     </form>
   );
 };

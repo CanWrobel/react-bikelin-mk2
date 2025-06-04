@@ -19,6 +19,8 @@ mongoose.connect('mongodb+srv://canwrob:mopsmopsmops@cluster0.tv4rxwp.mongodb.ne
 // Routen
 const incidentsRoute = require('./incidents.cjs');
 app.use('/incidents', incidentsRoute);
+const routesRoute = require('./routes.cjs');
+app.use('/routes', routesRoute);
 
 // Server starten
 const PORT = 3001;

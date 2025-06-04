@@ -24,9 +24,12 @@ const IncidentsList: React.FC<IncidentsListProps> = ({ token }) => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    axios.get(`http://141.45.146.183:8080/bikelin/api/incidents/${token}`, {
+    // axios.get(`http://141.45.146.183:8080/bikelin/api/incidents/${token}`, {
+    axios.get(`${API_BASE}/incidents/`, {
+    
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json'
@@ -44,8 +47,10 @@ const IncidentsList: React.FC<IncidentsListProps> = ({ token }) => {
   }, [token]);
 
   const handleDelete = (id) => {
-    axios.delete(`http://141.45.146.183:8080/bikelin/api/incident/${id}`, {
-      headers: {
+    // axios.delete(`http://141.45.146.183:8080/bikelin/api/incident/${id}`, {
+      axios.delete(`${API_BASE}/incidents/${id}`, {
+
+    headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json, text/plain, */*',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 OPR/115.0.0.0',
