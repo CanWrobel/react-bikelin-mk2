@@ -7,6 +7,7 @@ import AddIncident from '../AddIncident';
 
 interface BurgerMenuProps {
   toggleMenu: () => void;
+  pickerCancel?: () => void; // <–– optional mit `?`
   onPickLocation: (type: 'start' | 'end', coordinates: string) => void;
   selectedMapLocation: {
     type: 'start' | 'end';
@@ -18,6 +19,7 @@ interface BurgerMenuProps {
 const BurgerMenu: React.FC<BurgerMenuProps> = ({ 
   toggleMenu, 
   onPickLocation,
+  pickerCancel,
   selectedMapLocation 
 }) => {
   const { username, token, setUsername, setToken } = useUser();
@@ -125,6 +127,7 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
 
       {activeMenu === 'route' && 
         <NewRouteForm 
+          pickerCancel={pickerCancel}
           onClose={() => setActiveMenu(null)} 
           onPickLocation={handleRoutePickLocation}
           selectedLocation={selectedMapLocation} 

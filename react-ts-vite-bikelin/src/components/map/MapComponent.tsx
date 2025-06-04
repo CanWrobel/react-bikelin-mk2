@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
+import { GoogleMap, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { Incident } from '../../types/Incidents.ts';
 import { useUser } from '../../contexts/UserContext';
 import CustomInfoWindow from './InfoWindow';
@@ -67,32 +67,29 @@ const MapComponent: React.FC<MapComponentProps> = ({ isPickerMode, onLocationSel
   };
 
   return (
-    <LoadScript
-      googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={10}
+      onClick={handleMapClick}
     >
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={10}
-        onClick={handleMapClick}
-      >
-        {!isPickerMode && token && incidents.map((incident) => (
-          <Marker
-            key={incident._id}
-            position={{ lat: incident.latitude, lng: incident.longitude }}
-            onClick={() => setSelectedIncident(incident)}
-          />
-        ))}
-        {selectedIncident && (
-          <CustomInfoWindow
-            incident={selectedIncident}
-            onClose={() => setSelectedIncident(null)}
-          />
-        )}
-        {directions && <DirectionsRenderer directions={directions} />}
-      </GoogleMap>
-    </LoadScript>
+      {!isPickerMode && token && incidents.map((incident) => (
+        <Marker
+          key={incident._id}
+          position={{ lat: incident.latitude, lng: incident.longitude }}
+          onClick={() => setSelectedIncident(incident)}
+        />
+      ))}
+      {selectedIncident && (
+        <CustomInfoWindow
+          incident={selectedIncident}
+          onClose={() => setSelectedIncident(null)}
+        />
+      )}
+      {directions && <DirectionsRenderer directions={directions} />}
+    </GoogleMap>
   );
+  
 };
 
 export default MapComponent;

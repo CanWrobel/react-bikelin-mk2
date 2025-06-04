@@ -3,6 +3,9 @@ import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google
 import { useRoute } from '../../contexts/RouteContext';
 import DetailedWeatherComponentInTheMap from '../weather/DetailedWeatherInTheMap';
 import DetailedForecastZiel from '../weather/DetailedForecastZiel';
+import { useUser } from '../../contexts/UserContext';
+
+
 
 declare global {
   interface Window {
@@ -51,6 +54,7 @@ const MapPicker: React.FC<MapPickerProps> = ({
   const isCalculatingRoute = useRef(false);
   
   const lastRouteRequest = useRef<string | null>(null);
+  const { token } = useUser();
 
 useEffect(() => {
   if (!coordinates) return;
@@ -347,25 +351,23 @@ useEffect(() => {
 
 
             
+<GoogleMap
+  mapContainerStyle={containerStyle}
+  center={mapCenter}
+  zoom={mapZoom}
+  onClick={handleMapClick}
+  options={{
+    fullscreenControl: false,
+    mapTypeControl: true,
+    streetViewControl: false,
+    zoomControl: true
+  }}
+>
+  {startMarker && <Marker position={startMarker} label="" />}
+  {endMarker && <Marker position={endMarker} label="" />}
+  {directions && <DirectionsRenderer directions={directions} />}
+</GoogleMap>
 
-      <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={mapCenter}
-          zoom={mapZoom}
-          onClick={handleMapClick}
-          options={{
-            fullscreenControl: false,
-            mapTypeControl: true,
-            streetViewControl: false,
-            zoomControl: true
-          }}
-        >
-          {startMarker && <Marker position={startMarker} label="" />}
-          {endMarker && <Marker position={endMarker} label="" />}
-          {directions && <DirectionsRenderer directions={directions} />}
-        </GoogleMap>
-      </LoadScript>
       {showComponent && 
             <button
             onClick={handleLoadComponentFalse}
@@ -390,6 +392,44 @@ useEffect(() => {
       >
         Wettervorhersage für Start und Ziel einblenden
       </button> }
+
+      <button
+  type="button"
+  style={{ backgroundColor: 'green', color: 'white' }}
+  onClick={async () => {
+    try {
+      await axios.post(`${API_BASE}/routes`, {
+        startString: routeData.startAddress,
+        endString: routeData.endAddress,
+        routeDescription: routeData.description,
+        start: {
+          lon: parseFloat(routeData.startPoint.split(',')[1]),
+          lat: parseFloat(routeData.startPoint.split(',')[0])
+        },
+        end: {
+          lon: parseFloat(routeData.endPoint.split(',')[1]),
+          lat: parseFloat(routeData.endPoint.split(',')[0])
+        },
+        departureTime: routeData.departureTime,
+        saveRoute: true
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      alert('Route gespeichert!');
+    } catch (err) {
+      console.error('Fehler beim Speichern der Route:', err);
+      alert('Fehler beim Speichern');
+    }
+  }}
+>
+  Route speichern
+</button>
+
+
+
             <p className="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
   Startzeit: {routeInfo.startTime}
 </p>

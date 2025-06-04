@@ -70,6 +70,7 @@ const MainScreen: React.FC = () => {
       <div className="main-area">
         <div className={`burgerMenu ${menuActive ? 'active' : ''}`}>
           <BurgerMenu 
+            pickerCancel={handlePickerCancel}
             toggleMenu={toggleMenu}
             onPickLocation={handlePickLocation}
             selectedMapLocation={selectedMapLocation}

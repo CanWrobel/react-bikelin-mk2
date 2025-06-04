@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLoadScript, StandaloneSearchBox } from '@react-google-maps/api';
 import axios from 'axios';
 import { useUser } from '../contexts/UserContext';
 import { toggleSaveRoute } from './SaveRouteLogic'
 import { RouteData } from '../types/RouteData';
 import { useRoute } from '../contexts/RouteContext';
+import { StandaloneSearchBox } from '@react-google-maps/api';
 
 
 interface NewRouteFormProps {
@@ -32,10 +32,7 @@ const NewRouteForm: React.FC<NewRouteFormProps> = ({ onClose, onPickLocation, se
 
 
 
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyCrKbXEddxNxGUIo9ihGgQi2Xj_pDribYs",
-    libraries: ['places']
-  });
+
 
   const [routeData, setRouteData] = useState({
     startAddress: '',
@@ -232,7 +229,6 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
         }
   };
 
-  if (!isLoaded) return <div>Loading...</div>;
 
   return (
 <form onSubmit={handleSubmit}>
