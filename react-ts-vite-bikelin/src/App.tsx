@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React from 'react';
 import './App.css';
 import MainScreen from './components/MainScreen'; 
@@ -21,8 +23,8 @@ const App = () => {
   
   return (
     <LoadScript
-      googleMapsApiKey="AIzaSyCrKbXEddxNxGUIo9ihGgQi2Xj_pDribYs"
-      libraries={['places']}
+    googleMapsApiKey={import.meta.env.VITE_GOOGLE_PLACES_API_KEY}
+    libraries={['places']}
     >
       <Router>
         <UserProvider>

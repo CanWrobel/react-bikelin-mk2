@@ -6,11 +6,10 @@ const DetailedWeatherComponent = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Hardcoded test values
   const lat = 52.52;
   const lon = 13.405;
-  const dt = Math.floor(Date.now() / 1000); // current time
-  const apiKey = '0ebbf6dcf9f845bc366dec03a56a0ece';  // Replace with your API key
+  const dt = Math.floor(Date.now() / 1000); 
+  const apiKey = import.meta.env.VITE_OPENWEATHERMAP_API_KEY;
 
   useEffect(() => {
     const fetchTimeMachineData = async () => {
@@ -19,11 +18,11 @@ const DetailedWeatherComponent = () => {
         const response = await axios.get(
           `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${lat}&lon=${lon}&dt=${dt}&appid=${apiKey}&units=metric`
         );
-        console.log('Weather Data:', response.data);  // Log the response to see the structure
+        console.log('Weather Data:', response.data);  
         setWeatherData(response.data);
         setIsLoading(false);
       } catch (err) {
-        console.error('Error details:', err);  // Log any errors
+        console.error('Error details:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch weather');
         setIsLoading(false);
       }

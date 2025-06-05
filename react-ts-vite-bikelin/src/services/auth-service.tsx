@@ -38,7 +38,7 @@ export const initKeycloak = (): Promise<boolean> => {
   keycloakInitCalled = true;
 
   return keycloak.init({
-    onLoad: 'check-sso', // oder 'login-required' je nach Use Case
+    onLoad: 'check-sso',
     checkLoginIframe: false
   });
 };

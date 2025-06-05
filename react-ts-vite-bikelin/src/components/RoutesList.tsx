@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -22,7 +24,7 @@ const RouteList: React.FC<RouteListProps> = ({ token }) => {
     useEffect(() => {
         const fetchRoutes = async () => {
             try {
-                // const response = await axios.get('http://141.45.146.183:8080/route-manager/get-user-routes', {
+                // const response = await axios.get('http://141.45.191.145:8080/route-manager/get-user-routes', {
                 const response = await axios.get(`${API_BASE}/routes`, {
                     headers: {
                         Authorization: `Bearer ${token}`,

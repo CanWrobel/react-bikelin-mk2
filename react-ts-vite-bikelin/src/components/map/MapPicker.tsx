@@ -39,7 +39,9 @@ const MapPicker: React.FC<MapPickerProps> = ({
   const { 
     routeInfo, 
     setArrivalTime, 
-    setArrivalTimeUnix
+    setArrivalTimeUnix,
+    setCalculateEnabled,
+
   } = useRoute();
   
   const [startMarker, setStartMarker] = useState<{ lat: number, lng: number } | null>(null);
@@ -90,6 +92,7 @@ useEffect(() => {
         startMarker.lng === location.lng) {
       console.log('Start marker already has these coordinates, skipping update');
       window.isCoordinateUpdateLocked = false;
+      setCalculateEnabled(false)
       return;
     }
     
@@ -98,6 +101,7 @@ useEffect(() => {
         endMarker.lng === location.lng) {
       console.log('End marker already has these coordinates, skipping update');
       window.isCoordinateUpdateLocked = false;
+      setCalculateEnabled(false)
       return;
     }
     
@@ -150,6 +154,7 @@ useEffect(() => {
       
       lastRouteRequest.current = routeKey;
       calculateRoute(startMarker, endMarker);
+      setCalculateEnabled(false)
     }
   }, [startMarker, endMarker, routeInfo.calculateEnabled]);
 
@@ -393,40 +398,7 @@ useEffect(() => {
         Wettervorhersage für Start und Ziel einblenden
       </button> }
 
-      <button
-  type="button"
-  style={{ backgroundColor: 'green', color: 'white' }}
-  onClick={async () => {
-    try {
-      await axios.post(`${API_BASE}/routes`, {
-        startString: routeData.startAddress,
-        endString: routeData.endAddress,
-        routeDescription: routeData.description,
-        start: {
-          lon: parseFloat(routeData.startPoint.split(',')[1]),
-          lat: parseFloat(routeData.startPoint.split(',')[0])
-        },
-        end: {
-          lon: parseFloat(routeData.endPoint.split(',')[1]),
-          lat: parseFloat(routeData.endPoint.split(',')[0])
-        },
-        departureTime: routeData.departureTime,
-        saveRoute: true
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      alert('Route gespeichert!');
-    } catch (err) {
-      console.error('Fehler beim Speichern der Route:', err);
-      alert('Fehler beim Speichern');
-    }
-  }}
->
-  Route speichern
-</button>
+
 
 
 

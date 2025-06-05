@@ -13,7 +13,7 @@ const DetailedWeatherComponentInTheMap = () => {
   } = useRoute();
 
   
-  const apiKey = '0ebbf6dcf9f845bc366dec03a56a0ece';  
+  const apiKey = import.meta.env.VITE_OPENWEATHERMAP_API_KEY;
 
   useEffect(() => {
     const fetchTimeMachineData = async () => {
@@ -23,11 +23,11 @@ const DetailedWeatherComponentInTheMap = () => {
           `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${routeInfo.startLocation?.lat}&lon=${routeInfo.startLocation?.lng}&dt=${routeInfo.startTimeUnix}&appid=${apiKey}&units=metric`
         );
         
-        console.log('Weather Data:', response.data);  // Log the response to see the structure
+        console.log('Weather Data:', response.data);  
         setWeatherData(response.data);
         setIsLoading(false);
       } catch (err) {
-        console.error('Error details:', err);  // Log any errors
+        console.error('Error details:', err); // Log any errors
         setError(err instanceof Error ? err.message : 'Failed to fetch weather');
         setIsLoading(false);
       }

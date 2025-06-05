@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 
 interface AddIncidentProps {
   onClose: () => void;
@@ -9,6 +11,8 @@ interface AddIncidentProps {
 
 const AddIncident: React.FC<AddIncidentProps> = ({ onClose, selectedMapLocation, onPickLocation }) => {
   const { username, token } = useUser();
+  const navigate = useNavigate();
+
   
   const getTodayDate = () => new Date().toISOString().split('T')[0];
   const getCurrentTime = () => new Date().toTimeString().split(' ')[0].slice(0, 5);
@@ -128,6 +132,7 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose, selectedMapLocation,
         });
         setImage(null);
         onClose();
+        navigate('/'); // Statt onClose()
       } else {
         console.error('Failed to upload incident:', await response.text());
       }
@@ -235,7 +240,7 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose, selectedMapLocation,
           name="zip"
           value={formData.zip}
           onChange={handleInputChange}
-          required
+          // required
         />
       </label>
       <label>
@@ -245,7 +250,7 @@ const AddIncident: React.FC<AddIncidentProps> = ({ onClose, selectedMapLocation,
           name="city"
           value={formData.city}
           onChange={handleInputChange}
-          required
+          // required
         />
       </label>
       <label>

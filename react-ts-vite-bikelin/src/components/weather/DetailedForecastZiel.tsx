@@ -23,7 +23,7 @@ const DetailedForecastZiel = () => {
           `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${routeInfo.endLocation?.lat}&lon=${routeInfo.endLocation?.lng}&dt=${routeInfo.arrivalTimeUnix}&appid=${apiKey}&units=metric`
         );
         
-        console.log('Weather Data:', response.data);  // Log the response to see the structure
+        console.log('Weather Data:', response.data);  
         setWeatherData(response.data);
         setIsLoading(false);
       } catch (err) {

@@ -174,6 +174,7 @@ const handlePlaceSelection = (places: google.maps.places.PlaceResult[] | undefin
     setStartAddress(routeData.startAddress);
     setEndAddress(routeData.endAddress);
     setCalculateEnabled(true)
+    onClose()
     // if (routeData.saveRoute) {
     //   try {
     //     await axios.post(

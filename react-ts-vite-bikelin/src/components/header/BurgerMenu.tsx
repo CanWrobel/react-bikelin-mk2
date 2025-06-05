@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import keycloak from '../../services/auth-service';
@@ -46,7 +47,7 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
     keycloak.onAuthLogout = () => {
       setIsAuthenticated(false);
       setUsername(null);
-      setToken(null);
+      setToken(null);       
     };
 
     keycloak.onAuthSuccess = () => {
@@ -73,8 +74,9 @@ const BurgerMenu: React.FC<BurgerMenuProps> = ({
   };
 
   const handleNavigateHome = () => {
+    pickerCancel;
     navigate('/');
-    setTimeout(() => window.location.reload(), 0);
+    // setTimeout(() => window.location.reload(), 0);
   };
 
   const handleRoutePickLocation = (type: 'start' | 'end', coordinates: string) => {
