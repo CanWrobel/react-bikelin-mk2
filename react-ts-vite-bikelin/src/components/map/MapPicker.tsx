@@ -6,6 +6,7 @@ import { useRoute } from '../../contexts/RouteContext';
 import DetailedWeatherComponentInTheMap from '../weather/DetailedWeatherInTheMap';
 import DetailedForecastZiel from '../weather/DetailedForecastZiel';
 import { useUser } from '../../contexts/UserContext';
+import CustomInfoWindow from './InfoWindow';
 
 
 
@@ -56,6 +57,8 @@ const MapPicker: React.FC<MapPickerProps> = ({
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [mapZoom, setMapZoom] = useState(10);
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const ignoreNextMapClick = useRef(false);
 
   const isCalculatingRoute = useRef(false);
   
@@ -175,34 +178,39 @@ useEffect(() => {
 
   const handleMapClick = useCallback((event: google.maps.MapMouseEvent) => {
     try {
+      if (ignoreNextMapClick.current) {
+        ignoreNextMapClick.current = false;
+        return; // Klick war auf Marker – also abbrechen
+      }
+  
       if (!event.latLng) {
         console.error('Invalid map click event: No latLng property');
         return;
       }
-      
+  
       const lat = event.latLng.lat();
       const lng = event.latLng.lng();
-      
+  
       if (isNaN(lat) || isNaN(lng)) {
         console.error(`Invalid coordinates from map click: lat=${lat}, lng=${lng}`);
         return;
       }
-      
+  
       const location = { lat, lng };
-      
+  
       if (window.isCoordinateUpdateLocked) {
         console.log('Map click ignored - update already in progress');
         return;
       }
-      
+  
       window.isCoordinateUpdateLocked = true;
-      
+  
       if (pickingType === 'start') {
         setStartMarker(location);
       } else {
         setEndMarker(location);
       }
-      
+  
       setTimeout(() => {
         onSelect(location);
         window.isCoordinateUpdateLocked = false;
@@ -212,6 +220,7 @@ useEffect(() => {
       window.isCoordinateUpdateLocked = false;
     }
   }, [pickingType, onSelect]);
+  
 
   const calculateRoute = useCallback((start: { lat: number, lng: number }, end: { lat: number, lng: number }) => {
     if (!start || !end) return;
@@ -430,12 +439,25 @@ useEffect(() => {
         strokeWeight: 1,
         strokeColor: '#660066',
       }}
+      onClick={() => {
+        ignoreNextMapClick.current = true;
+        setSelectedIncident(incident);
+      }}
     />
   ))}
+
+  {/* InfoWindow anzeigen, wenn eins gewählt wurde */}
+  {selectedIncident && (
+    <CustomInfoWindow
+      incident={selectedIncident}
+      onClose={() => setSelectedIncident(null)}
+    />
+  )}
 
   {/* Routenanzeige */}
   {directions && <DirectionsRenderer directions={directions} />}
 </GoogleMap>
+
 
 
       {showComponent && 
